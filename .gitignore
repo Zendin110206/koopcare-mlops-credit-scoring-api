@@ -1,0 +1,58 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+.env.local
+
+# Local context and personal working notes
+Baca INI (folder tidak akan dippake*/
+PANDUAN_KERJA_NYATA_KOOPCARE_MLOPS_DARI_NOL.md
+AUDIT_KOOPCARE_MLOPS_ZAENAL.md
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data and model artifacts
+data/*
+!data/.gitkeep
+!data/README.md
+
+models/*
+!models/.gitkeep
+!models/README.md
+
+# Output files
+outputs/
+reports/
+*.csv
+*.xlsx
+*.parquet
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Testing/cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
