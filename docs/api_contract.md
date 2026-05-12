@@ -14,23 +14,29 @@ Local development:
 http://127.0.0.1:8000
 ```
 
-## Planned Endpoints
+## Endpoint Status
 
 ### GET /health
 
-Checks whether the API service is running.
+Status: implemented.
 
-Planned response:
+Checks whether the API service is running and whether the local model artifact exists.
+
+Example response before `models/best_model.pkl` is available:
 
 ```json
 {
   "status": "ok",
   "service": "KoopCare ML Inference API",
-  "model_loaded": true
+  "environment": "development",
+  "model_loaded": false,
+  "model_path": "models/best_model.pkl"
 }
 ```
 
 ### GET /model-info
+
+Status: planned.
 
 Returns model metadata.
 
@@ -47,6 +53,8 @@ Planned response:
 ```
 
 ### POST /predict
+
+Status: planned.
 
 Runs credit risk prediction.
 

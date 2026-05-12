@@ -4,9 +4,9 @@ FastAPI-based machine learning inference service for KoopCare, an AI-assisted cr
 
 ## Project Status
 
-This repository is currently in the initial MLOps/API setup phase.
+This repository is currently in the initial MLOps/API implementation phase.
 
-The current focus is to prepare a clean, documented, and reproducible API repository before implementing the full prediction service.
+The current API includes a working health endpoint. Model metadata and prediction endpoints are planned for the next implementation checkpoints.
 
 ## Project Context
 
@@ -34,13 +34,14 @@ Main responsibilities in this repository:
 - document model assumptions and limitations
 - support backend, web, and mobile integration
 
-## Planned API Features
+## API Status
 
-- `GET /health` for service health checks
-- `GET /model-info` for model metadata
-- `POST /predict` for credit risk prediction
-- FastAPI OpenAPI documentation at `/docs`
-- human-in-the-loop response design
+- `GET /` returns basic service navigation
+- `GET /health` returns service health and local model availability
+- `GET /model-info` is planned for model metadata
+- `POST /predict` is planned for credit risk prediction
+- FastAPI OpenAPI documentation is available at `/docs` when the server is running
+- human-in-the-loop response design is planned for prediction output
 
 ## Current Model Direction
 
@@ -114,6 +115,30 @@ Copy environment configuration:
 
 ```powershell
 Copy-Item .env.example .env
+```
+
+Run the API:
+
+```powershell
+uvicorn src.main:app --reload
+```
+
+Open local health check:
+
+```text
+http://127.0.0.1:8000/health
+```
+
+Open FastAPI documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Run tests:
+
+```powershell
+pytest
 ```
 
 ## Documentation

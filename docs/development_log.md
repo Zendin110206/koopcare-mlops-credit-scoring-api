@@ -28,16 +28,20 @@ The current role focus is ML Ops and ML integration:
 - Identified model artifact mismatch between older README assumptions and actual artifact inspection.
 - Confirmed the current model direction should follow the XGBoost artifact and threshold around `0.6660796`.
 - Initialized Git repository and connected it to the public GitHub repository.
+- Implemented the first FastAPI endpoints: `GET /` and `GET /health`.
+- Added a basic test suite for the root and health endpoints.
 
 ### Key Technical Decision
 
 The API implementation should follow the actual model artifact instead of outdated README assumptions.
 
+The first implemented endpoint is `/health` because it proves that the API can run before adding model loading complexity.
+
 ### Next Steps
 
-- Implement FastAPI configuration.
-- Implement request and response schemas.
+- Implement model metadata endpoint.
+- Implement request and response schemas for prediction.
 - Implement model loading service.
-- Add health, model-info, and predict endpoints.
+- Add prediction endpoint.
 - Test the API locally.
 - Push implementation in small, explainable commits.
