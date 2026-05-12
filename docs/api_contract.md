@@ -58,11 +58,11 @@ Example response before `models/best_model.pkl` is available:
 
 ### POST /predict
 
-Status: planned.
+Status: planned endpoint. Request and response schemas are implemented.
 
-Runs credit risk prediction.
+Runs credit risk prediction. The endpoint itself is not active yet.
 
-Planned request:
+Prepared request schema:
 
 ```json
 {
@@ -80,7 +80,7 @@ Planned request:
   "amt_annuity": 20560.5,
   "amt_goods_price": 450000.0,
   "days_birth": -19241,
-  "days_employed": -2329,
+  "days_employed": -2329.0,
   "days_last_phone_change": -1740.0,
   "ext_source_1": 0.5,
   "ext_source_2": 0.6,
@@ -88,7 +88,7 @@ Planned request:
 }
 ```
 
-Planned response:
+Prepared response schema:
 
 ```json
 {
@@ -104,6 +104,13 @@ Planned response:
   "note": "AI recommendation only. Final financing decision must be reviewed and approved by cooperative officers."
 }
 ```
+
+Notes:
+
+- `days_birth` must be a negative Home Credit style day offset.
+- `days_last_phone_change` must be less than or equal to `0`.
+- `ext_source_1`, `ext_source_2`, and `ext_source_3` are optional and must be between `0` and `1` when provided.
+- `flag_own_car` and `flag_own_realty` currently accept `Y` or `N`.
 
 ## Label Meaning
 

@@ -33,6 +33,8 @@ The current role focus is ML Ops and ML integration:
 - Implemented `GET /model-info` for configured model metadata and local artifact status.
 - Added a response schema for model metadata.
 - Added service-layer logic for model metadata so model-related logic does not stay inside `main.py`.
+- Added prediction request and response schemas.
+- Added schema validation tests for valid payloads, ownership flags, external source ranges, birth-day offsets, and human review defaults.
 
 ### Key Technical Decision
 
@@ -42,9 +44,10 @@ The first implemented endpoint is `/health` because it proves that the API can r
 
 The `/model-info` endpoint currently reads metadata from configuration. It does not load the pickle artifact yet. This keeps the endpoint useful before prediction is implemented while avoiding premature model-loading complexity.
 
+The prediction schemas are prepared before the `/predict` endpoint so the API contract is explicit before model inference is added.
+
 ### Next Steps
 
-- Implement request and response schemas for prediction.
 - Implement model loading service.
 - Add prediction endpoint.
 - Test the API locally.

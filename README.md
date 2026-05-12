@@ -39,7 +39,7 @@ Main responsibilities in this repository:
 - `GET /` returns basic service navigation
 - `GET /health` returns service health and local model availability
 - `GET /model-info` returns configured model metadata and local artifact status
-- `POST /predict` is planned for credit risk prediction
+- `POST /predict` is planned for credit risk prediction; request and response schemas are prepared
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
 - human-in-the-loop response design is planned for prediction output
 
@@ -174,6 +174,32 @@ Model metadata:
   "artifact_status": "missing",
   "metadata_source": "configuration",
   "note": "Model artifact is not available yet. Copy best_model.pkl into models/ before enabling prediction."
+}
+```
+
+Prediction request schema preview:
+
+```json
+{
+  "code_gender": "M",
+  "name_income_type": "Working",
+  "name_education_type": "Secondary / secondary special",
+  "name_family_status": "Married",
+  "occupation_type": "Laborers",
+  "flag_own_car": "N",
+  "flag_own_realty": "Y",
+  "cnt_children": 0,
+  "cnt_fam_members": 2.0,
+  "amt_income_total": 135000.0,
+  "amt_credit": 568800.0,
+  "amt_annuity": 20560.5,
+  "amt_goods_price": 450000.0,
+  "days_birth": -19241,
+  "days_employed": -2329.0,
+  "days_last_phone_change": -1740.0,
+  "ext_source_1": 0.5,
+  "ext_source_2": 0.6,
+  "ext_source_3": 0.4
 }
 ```
 
