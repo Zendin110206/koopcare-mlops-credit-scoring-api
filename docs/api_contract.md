@@ -81,7 +81,7 @@ model_name
 
 ### POST /predict
 
-Status: planned endpoint. Request/response schemas and feature mapping are implemented.
+Status: planned endpoint. Request/response schemas, feature mapping, and decision helpers are implemented.
 
 Runs credit risk prediction. The endpoint itself is not active yet.
 
@@ -193,6 +193,25 @@ if prob_default >= threshold:
 else:
     ai_recommendation = LAYAK
 ```
+
+Prepared risk level rule:
+
+```text
+if prob_default >= threshold:
+    risk_level = HIGH
+elif prob_default >= threshold * 0.75:
+    risk_level = MEDIUM
+else:
+    risk_level = LOW
+```
+
+Prepared confidence rule:
+
+```text
+confidence = abs(prob_default - threshold) / max(threshold, 1 - threshold)
+```
+
+The returned confidence is capped at `1.0` and rounded in the prediction response.
 
 ## Human Review
 

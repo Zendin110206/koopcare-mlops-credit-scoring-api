@@ -39,6 +39,8 @@ The current role focus is ML Ops and ML integration:
 - Added feature engineering tests for raw field mapping, derived feature calculations, employment anomaly handling, and missing external source values.
 - Added safe model artifact metadata inspection for `best_model.pkl`.
 - Added artifact metadata tests for missing, valid, and invalid artifact scenarios.
+- Added prediction decision helpers for recommendation, risk level, confidence, and response construction.
+- Added decision helper tests for threshold boundaries and invalid probability values.
 
 ### Key Technical Decision
 
@@ -53,6 +55,8 @@ The prediction schemas are prepared before the `/predict` endpoint so the API co
 The feature engineering mapper is prepared before model loading so prediction input can be converted into the exact column order expected by the model artifact.
 
 The model metadata endpoint now attempts to read artifact metadata when `best_model.pkl` exists, but it falls back safely to configuration metadata when the artifact is missing or invalid.
+
+Prediction decision helpers are prepared before the prediction endpoint so probability-to-decision logic can be tested independently from model inference.
 
 ### Next Steps
 

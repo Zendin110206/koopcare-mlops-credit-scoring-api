@@ -6,7 +6,7 @@ import pandas as pd
 
 from src.core.config import Settings
 from src.schemas.model_info import ModelInfoResponse
-from src.schemas.prediction import PredictionRequest
+from src.schemas.prediction import PredictionRequest, PredictionResponse
 
 
 MODEL_FEATURE_COLUMNS = [
@@ -38,6 +38,10 @@ MODEL_FEATURE_COLUMNS = [
 ]
 
 REQUIRED_ARTIFACT_KEYS = {"features", "model", "preprocessor", "threshold"}
+DECISION_SUPPORT_NOTE = (
+    "AI recommendation only. Final financing decision must be reviewed and "
+    "approved by cooperative officers."
+)
 
 
 def get_model_info(settings: Settings) -> ModelInfoResponse:
@@ -167,3 +171,59 @@ def build_model_feature_frame(payload: PredictionRequest) -> pd.DataFrame:
     feature_frame["EXT_SOURCE_PROD"] = feature_frame[ext_source_columns].prod(axis=1)
 
     return feature_frame[MODEL_FEATURE_COLUMNS]
+
+
+def get_ai_recommendation(prob_default: float, threshold: float) -> str:
+    _validate_probability_value(prob_default, "prob_default")
+    _validate_probability_value(threshold, "threshold")
+
+    return "TIDAK_LAYAK" if prob_default >= threshold else "LAYAK"
+
+
+def get_risk_level(prob_default: float, threshold: float) -> str:
+    _validate_probability_value(prob_default, "prob_default")
+    _validate_probability_value(threshold, "threshold")
+
+    if prob_default >= threshold:
+        return "HIGH"
+    if prob_default >= threshold * 0.75:
+        return "MEDIUM"
+    return "LOW"
+
+
+def calculate_confidence(prob_default: float, threshold: float) -> float:
+    _validate_probability_value(prob_default, "prob_default")
+    _validate_probability_value(threshold, "threshold")
+
+    distance = abs(prob_default - threshold)
+    normalizer = max(threshold, 1 - threshold)
+
+    if normalizer == 0:
+        return 1.0
+
+    return min(1.0, distance / normalizer)
+
+
+def build_prediction_response(
+    prob_default: float,
+    threshold: float,
+    model_name: str,
+    model_version: str,
+) -> PredictionResponse:
+    return PredictionResponse(
+        ai_recommendation=get_ai_recommendation(prob_default, threshold),
+        risk_level=get_risk_level(prob_default, threshold),
+        prob_default=round(prob_default, 6),
+        threshold=round(threshold, 6),
+        confidence=round(calculate_confidence(prob_default, threshold), 6),
+        model_name=model_name,
+        model_version=model_version,
+        human_review_required=True,
+        final_decision=None,
+        note=DECISION_SUPPORT_NOTE,
+    )
+
+
+def _validate_probability_value(value: float, name: str) -> None:
+    if not 0 <= value <= 1:
+        raise ValueError(f"{name} must be between 0 and 1.")

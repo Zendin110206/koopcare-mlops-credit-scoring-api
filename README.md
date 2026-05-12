@@ -39,7 +39,7 @@ Main responsibilities in this repository:
 - `GET /` returns basic service navigation
 - `GET /health` returns service health and local model availability
 - `GET /model-info` returns configured model metadata and local artifact status
-- `POST /predict` is planned for credit risk prediction; request/response schemas and feature mapping are prepared
+- `POST /predict` is planned for credit risk prediction; request/response schemas, feature mapping, and decision helpers are prepared
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
 - human-in-the-loop response design is planned for prediction output
 
@@ -226,6 +226,14 @@ Model artifact metadata handling:
 - missing artifact returns `artifact_status: "missing"`
 - valid artifact returns `artifact_status: "available"` and `metadata_source: "artifact"`
 - invalid artifact returns `artifact_status: "invalid"` without crashing the API
+
+Prepared prediction decision helpers:
+
+- `prob_default >= threshold` returns `TIDAK_LAYAK`
+- `prob_default < threshold` returns `LAYAK`
+- risk level is derived from probability bands around the threshold
+- confidence is derived from the distance between probability and threshold
+- every prediction response defaults to `human_review_required: true`
 
 ## Documentation
 
