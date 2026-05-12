@@ -126,6 +126,18 @@ def test_predict_credit_risk_rejects_invalid_probability_shape(
         predict_credit_risk(payload, settings)
 
 
+def test_predict_credit_risk_rejects_multiclass_probability_shape(
+    tmp_path: Path,
+) -> None:
+    model_path = tmp_path / "best_model.pkl"
+    settings = make_settings(model_path)
+    joblib.dump(make_artifact([[0.2, 0.3, 0.5]], threshold=0.5), model_path)
+    payload = PredictionRequest(**VALID_PREDICTION_PAYLOAD)
+
+    with pytest.raises(ModelPredictionError, match="exactly two"):
+        predict_credit_risk(payload, settings)
+
+
 def test_predict_credit_risk_rejects_invalid_default_probability(
     tmp_path: Path,
 ) -> None:

@@ -345,10 +345,10 @@ def _extract_default_probability(probabilities: Any) -> float:
     if (
         probability_array.ndim != 2
         or probability_array.shape[0] != 1
-        or probability_array.shape[1] < 2
+        or probability_array.shape[1] != 2
     ):
         raise ModelPredictionError(
-            "predict_proba must return one row with probability columns for "
+            "predict_proba must return one row with exactly two probability columns for "
             "class 0 and class 1."
         )
 

@@ -45,7 +45,7 @@ Main responsibilities in this repository:
 
 ## Current Model Direction
 
-The API is planned to use the KoopCare prototype model artifact:
+The API uses the KoopCare prototype model artifact when it is available locally:
 
 ```text
 models/best_model.pkl

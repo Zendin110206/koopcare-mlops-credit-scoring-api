@@ -131,6 +131,13 @@ PredictionRequest
 -> build_prediction_response(...)
 ```
 
+The prediction model is treated as binary classification. The API expects `predict_proba(...)` to return exactly two probability columns:
+
+```text
+class 0 = non-default / lower risk
+class 1 = default risk / higher risk
+```
+
 Prepared request schema:
 
 ```json

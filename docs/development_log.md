@@ -60,7 +60,7 @@ The API implementation should follow the actual model artifact instead of outdat
 
 The first implemented endpoint is `/health` because it proves that the API can run before adding model loading complexity.
 
-The `/model-info` endpoint currently reads metadata from configuration. It does not load the pickle artifact yet. This keeps the endpoint useful before prediction is implemented while avoiding premature model-loading complexity.
+The `/model-info` endpoint began as a configuration-only endpoint, then evolved into safe artifact validation. It now reports artifact metadata when `best_model.pkl` is available and valid, and falls back to configuration metadata when the artifact is missing or invalid.
 
 The prediction schemas are prepared before the `/predict` endpoint so the API contract is explicit before model inference is added.
 
@@ -79,9 +79,11 @@ Model loading now validates runtime readiness:
 - feature names must match the expected 25 columns in order
 - threshold must be between `0` and `1`
 
-Prediction inference is implemented in the service layer before exposing the HTTP endpoint. This keeps the riskiest ML path testable without mixing it with request routing and HTTP error handling.
+Prediction inference was implemented in the service layer before exposing the HTTP endpoint. This kept the riskiest ML path testable before request routing and HTTP error handling were added.
 
 The prediction endpoint is now a thin HTTP wrapper around the service layer. FastAPI handles request validation, while the endpoint translates ML/runtime errors into explicit HTTP errors.
+
+After the progress 01-10 review, the binary `predict_proba(...)` validation was tightened so the service only accepts exactly two probability columns: class 0 and class 1. This prevents a future multiclass artifact from being interpreted incorrectly as a binary default-risk model.
 
 ### Next Steps
 

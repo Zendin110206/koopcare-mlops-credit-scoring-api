@@ -8,8 +8,18 @@ class ModelInfoResponse(BaseModel):
     model_name: str = Field(description="Expected prototype model name.")
     model_version: str = Field(description="Configured model version label.")
     model_path: str = Field(description="Configured model artifact path.")
-    threshold: float = Field(description="Configured classification threshold.")
-    features_count: int = Field(description="Expected number of input features.")
+    threshold: float = Field(
+        description=(
+            "Classification threshold reported from the artifact when valid, "
+            "otherwise from configuration."
+        )
+    )
+    features_count: int = Field(
+        description=(
+            "Number of input features reported from the artifact when valid, "
+            "otherwise from configuration."
+        )
+    )
     artifact_status: str = Field(
         description="Human-readable status of the local model artifact."
     )
