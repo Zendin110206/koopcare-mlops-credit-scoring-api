@@ -28,6 +28,14 @@ threshold: 0.6660796
 required_features: 25
 ```
 
+Runtime verification on 2026-05-12 confirmed:
+
+```text
+artifact keys: features, model, model_name, preprocessor, threshold
+model type: XGBClassifier
+preprocessor type: ColumnTransformer
+```
+
 ## Expected Artifact Structure
 
 The API expects `best_model.pkl` to be a trusted joblib/pickle artifact containing these keys:
@@ -47,12 +55,32 @@ model_name
 
 Only use model artifacts from trusted KoopCare/team sources. Python pickle/joblib files can execute code during loading, so do not load unknown artifacts.
 
+## Dependency Compatibility
+
+The current artifact was serialized with scikit-learn 1.6.1.
+
+Use the pinned project requirements before loading the model:
+
+```powershell
+pip install -r requirements.txt
+```
+
+If scikit-learn is too new, loading the pickle can fail even when the artifact file itself is correct.
+
 ## How to Prepare Locally
 
 Download or copy `best_model.pkl` into this directory:
 
 ```text
 models/best_model.pkl
+```
+
+PowerShell download command:
+
+```powershell
+Invoke-WebRequest `
+  -Uri "https://raw.githubusercontent.com/AdityaNugrahaPS/KoopCare-EDA/main/best_model.pkl" `
+  -OutFile ".\models\best_model.pkl"
 ```
 
 After the API implementation is ready, check the loaded model through:

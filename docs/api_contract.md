@@ -40,6 +40,8 @@ Status: implemented.
 
 Returns configured model metadata and local model artifact availability.
 
+When the artifact exists, the service validates that the artifact can be used at runtime, not only that the file exists.
+
 Example response before `models/best_model.pkl` is available:
 
 ```json
@@ -61,7 +63,7 @@ Example response before `models/best_model.pkl` is available:
 Artifact status meaning:
 
 - `missing`: configured artifact path does not exist yet
-- `available`: artifact exists, can be loaded, and contains required keys
+- `available`: artifact exists, can be loaded, and contains the runtime components needed for inference
 - `invalid`: artifact exists but cannot be loaded or does not match the expected structure
 
 Expected artifact keys:
@@ -77,6 +79,39 @@ Optional artifact key:
 
 ```text
 model_name
+```
+
+Runtime validation checklist:
+
+- artifact must be a dictionary
+- artifact must contain all required keys
+- artifact `features` must match the 25 expected KoopCare feature columns in order
+- artifact `model` must provide `predict_proba(...)`
+- artifact `preprocessor` must provide `transform(...)`
+- artifact `threshold` must be a number between `0` and `1`
+
+Example response after a valid local artifact is available:
+
+```json
+{
+  "model_loaded": true,
+  "model_name": "XGBoost",
+  "model_version": "koopcare-xgboost-v1",
+  "model_path": "models/best_model.pkl",
+  "threshold": 0.6660796,
+  "features_count": 25,
+  "artifact_status": "available",
+  "artifact_keys": [
+    "features",
+    "model",
+    "model_name",
+    "preprocessor",
+    "threshold"
+  ],
+  "artifact_error": null,
+  "metadata_source": "artifact",
+  "note": "Model artifact is available and runtime components were validated."
+}
 ```
 
 ### POST /predict

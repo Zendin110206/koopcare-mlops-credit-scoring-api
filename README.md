@@ -6,7 +6,7 @@ FastAPI-based machine learning inference service for KoopCare, an AI-assisted cr
 
 This repository is currently in the initial MLOps/API implementation phase.
 
-The current API includes working health and model metadata endpoints. The prediction endpoint is planned for the next implementation checkpoints.
+The current API includes working health and model metadata endpoints. The service layer can now load and validate the local model artifact runtime components. The prediction endpoint is planned for the next implementation checkpoints.
 
 ## Project Context
 
@@ -38,7 +38,7 @@ Main responsibilities in this repository:
 
 - `GET /` returns basic service navigation
 - `GET /health` returns service health and local model availability
-- `GET /model-info` returns configured model metadata and local artifact status
+- `GET /model-info` returns configured model metadata and validated local artifact status
 - `POST /predict` is planned for credit risk prediction; request/response schemas, feature mapping, and decision helpers are prepared
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
 - human-in-the-loop response design is planned for prediction output
@@ -68,8 +68,8 @@ The model artifact itself is not committed to this repository because model file
 - Uvicorn
 - pandas
 - NumPy
-- scikit-learn
-- XGBoost
+- scikit-learn 1.6.1 for compatibility with the current `best_model.pkl` artifact
+- XGBoost 3.2.0
 - joblib
 - pytest
 
@@ -111,6 +111,8 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+The current `best_model.pkl` artifact was created with scikit-learn 1.6.1. If you previously installed unpinned dependencies, rerun the command above so the local environment uses the compatible version.
+
 Copy environment configuration:
 
 ```powershell
@@ -147,6 +149,16 @@ Run tests:
 pytest
 ```
 
+Prepare the local model artifact when you need `/model-info` to validate the runtime model:
+
+```powershell
+Invoke-WebRequest `
+  -Uri "https://raw.githubusercontent.com/AdityaNugrahaPS/KoopCare-EDA/main/best_model.pkl" `
+  -OutFile ".\models\best_model.pkl"
+```
+
+The downloaded `.pkl` file stays local and is ignored by git.
+
 ## Current Endpoint Examples
 
 Health check:
@@ -176,6 +188,30 @@ Model metadata:
   "artifact_error": null,
   "metadata_source": "configuration",
   "note": "Model artifact is not available yet. Copy best_model.pkl into models/ before enabling prediction."
+}
+```
+
+Model metadata after a valid local artifact is available:
+
+```json
+{
+  "model_loaded": true,
+  "model_name": "XGBoost",
+  "model_version": "koopcare-xgboost-v1",
+  "model_path": "models/best_model.pkl",
+  "threshold": 0.6660796,
+  "features_count": 25,
+  "artifact_status": "available",
+  "artifact_keys": [
+    "features",
+    "model",
+    "model_name",
+    "preprocessor",
+    "threshold"
+  ],
+  "artifact_error": null,
+  "metadata_source": "artifact",
+  "note": "Model artifact is available and runtime components were validated."
 }
 ```
 
@@ -226,6 +262,7 @@ Model artifact metadata handling:
 - missing artifact returns `artifact_status: "missing"`
 - valid artifact returns `artifact_status: "available"` and `metadata_source: "artifact"`
 - invalid artifact returns `artifact_status: "invalid"` without crashing the API
+- valid artifact loading checks required keys, exact expected feature order, `model.predict_proba(...)`, `preprocessor.transform(...)`, and a threshold between `0` and `1`
 
 Prepared prediction decision helpers:
 

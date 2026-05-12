@@ -33,6 +33,17 @@ threshold: 0.6660796
 required_features: 25
 ```
 
+Runtime artifact inspection confirmed:
+
+```text
+model type: XGBClassifier
+preprocessor type: ColumnTransformer
+required artifact keys: features, model, preprocessor, threshold
+optional artifact key: model_name
+```
+
+The current artifact requires a compatible scikit-learn runtime. The API environment pins `scikit-learn==1.6.1` because newer versions can fail to unpickle the current preprocessor artifact.
+
 ## Label Meaning
 
 ```text

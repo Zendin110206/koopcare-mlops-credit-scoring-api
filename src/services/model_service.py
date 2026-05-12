@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any
 
 import joblib
@@ -44,6 +45,32 @@ DECISION_SUPPORT_NOTE = (
 )
 
 
+class ModelArtifactError(RuntimeError):
+    """Base exception for model artifact loading and validation failures."""
+
+
+class ModelArtifactMissingError(ModelArtifactError):
+    """Raised when the configured model artifact path does not exist."""
+
+
+class ModelArtifactInvalidError(ModelArtifactError):
+    """Raised when the model artifact exists but cannot be used safely."""
+
+
+@dataclass(frozen=True)
+class LoadedModelArtifact:
+    model: Any
+    preprocessor: Any
+    features: list[str]
+    threshold: float
+    model_name: str
+    artifact_keys: list[str]
+
+    @property
+    def features_count(self) -> int:
+        return len(self.features)
+
+
 def get_model_info(settings: Settings) -> ModelInfoResponse:
     if not settings.resolved_model_path.exists():
         return ModelInfoResponse(
@@ -64,7 +91,7 @@ def get_model_info(settings: Settings) -> ModelInfoResponse:
         )
 
     try:
-        artifact_metadata = load_model_artifact_metadata(settings)
+        loaded_artifact = load_model_artifact(settings)
     except Exception as exc:
         return ModelInfoResponse(
             model_loaded=False,
@@ -85,43 +112,104 @@ def get_model_info(settings: Settings) -> ModelInfoResponse:
 
     return ModelInfoResponse(
         model_loaded=True,
-        model_name=artifact_metadata["model_name"],
+        model_name=loaded_artifact.model_name,
         model_version=settings.model_version,
         model_path=settings.model_path,
-        threshold=artifact_metadata["threshold"],
-        features_count=artifact_metadata["features_count"],
+        threshold=loaded_artifact.threshold,
+        features_count=loaded_artifact.features_count,
         artifact_status="available",
-        artifact_keys=artifact_metadata["artifact_keys"],
+        artifact_keys=loaded_artifact.artifact_keys,
         artifact_error=None,
         metadata_source="artifact",
-        note="Model artifact is available and metadata was read from best_model.pkl.",
+        note="Model artifact is available and runtime components were validated.",
     )
 
 
-def load_model_artifact_metadata(settings: Settings) -> dict[str, Any]:
-    artifact = joblib.load(settings.resolved_model_path)
+def load_model_artifact(settings: Settings) -> LoadedModelArtifact:
+    if not settings.resolved_model_path.exists():
+        raise ModelArtifactMissingError(
+            f"Model artifact not found at {settings.model_path}."
+        )
 
+    try:
+        artifact = joblib.load(settings.resolved_model_path)
+    except Exception as exc:
+        raise ModelArtifactInvalidError(
+            f"Unable to load model artifact at {settings.model_path}: {exc}"
+        ) from exc
+
+    return _validate_model_artifact(artifact, settings)
+
+
+def load_model_artifact_metadata(settings: Settings) -> dict[str, Any]:
+    loaded_artifact = load_model_artifact(settings)
+
+    return {
+        "model_name": loaded_artifact.model_name,
+        "threshold": loaded_artifact.threshold,
+        "features_count": loaded_artifact.features_count,
+        "artifact_keys": loaded_artifact.artifact_keys,
+    }
+
+
+def _validate_model_artifact(
+    artifact: Any,
+    settings: Settings,
+) -> LoadedModelArtifact:
     if not isinstance(artifact, dict):
-        raise TypeError("Model artifact must be a dictionary.")
+        raise ModelArtifactInvalidError("Model artifact must be a dictionary.")
 
     missing_keys = REQUIRED_ARTIFACT_KEYS.difference(artifact)
     if missing_keys:
         missing = ", ".join(sorted(missing_keys))
-        raise ValueError(f"Model artifact is missing required keys: {missing}.")
+        raise ModelArtifactInvalidError(
+            f"Model artifact is missing required keys: {missing}."
+        )
 
     features = artifact["features"]
     if not isinstance(features, (list, tuple)):
-        raise TypeError("Model artifact 'features' value must be a list or tuple.")
+        raise ModelArtifactInvalidError(
+            "Model artifact 'features' value must be a list or tuple."
+        )
 
-    threshold = float(artifact["threshold"])
-    model_name = str(artifact.get("model_name", settings.model_name))
+    feature_names = list(features)
+    if not all(isinstance(feature, str) for feature in feature_names):
+        raise ModelArtifactInvalidError(
+            "Model artifact 'features' value must contain only strings."
+        )
 
-    return {
-        "model_name": model_name,
-        "threshold": threshold,
-        "features_count": len(features),
-        "artifact_keys": sorted(artifact.keys()),
-    }
+    if feature_names != MODEL_FEATURE_COLUMNS:
+        raise ModelArtifactInvalidError(
+            "Model artifact features do not match expected KoopCare feature columns."
+        )
+
+    model = artifact["model"]
+    if not hasattr(model, "predict_proba"):
+        raise ModelArtifactInvalidError(
+            "Model artifact 'model' must provide a predict_proba method."
+        )
+
+    preprocessor = artifact["preprocessor"]
+    if not hasattr(preprocessor, "transform"):
+        raise ModelArtifactInvalidError(
+            "Model artifact 'preprocessor' must provide a transform method."
+        )
+
+    try:
+        threshold = float(artifact["threshold"])
+        _validate_probability_value(threshold, "threshold")
+    except (TypeError, ValueError) as exc:
+        raise ModelArtifactInvalidError(str(exc)) from exc
+
+    return LoadedModelArtifact(
+        model=model,
+        preprocessor=preprocessor,
+        features=feature_names,
+        threshold=threshold,
+        model_name=str(artifact.get("model_name", settings.model_name)),
+        artifact_keys=sorted(artifact.keys()),
+    )
+
 
 
 def build_model_feature_frame(payload: PredictionRequest) -> pd.DataFrame:

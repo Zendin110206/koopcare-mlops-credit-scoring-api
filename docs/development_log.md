@@ -41,6 +41,11 @@ The current role focus is ML Ops and ML integration:
 - Added artifact metadata tests for missing, valid, and invalid artifact scenarios.
 - Added prediction decision helpers for recommendation, risk level, confidence, and response construction.
 - Added decision helper tests for threshold boundaries and invalid probability values.
+- Downloaded the trusted local `best_model.pkl` artifact for runtime verification.
+- Identified and fixed artifact compatibility by pinning `scikit-learn==1.6.1`.
+- Added full model artifact loading with validation for model, preprocessor, feature order, and threshold.
+- Added model loading tests for runtime components and invalid artifact structures.
+- Made endpoint tests independent from local model artifact presence.
 
 ### Key Technical Decision
 
@@ -58,9 +63,18 @@ The model metadata endpoint now attempts to read artifact metadata when `best_mo
 
 Prediction decision helpers are prepared before the prediction endpoint so probability-to-decision logic can be tested independently from model inference.
 
+The current pickle artifact requires dependency compatibility. The artifact failed under `scikit-learn 1.8.0` and loaded successfully after pinning the environment to `scikit-learn 1.6.1`, which matches the version used when the artifact was created.
+
+Model loading now validates runtime readiness:
+
+- `model.predict_proba(...)` must exist
+- `preprocessor.transform(...)` must exist
+- feature names must match the expected 25 columns in order
+- threshold must be between `0` and `1`
+
 ### Next Steps
 
-- Implement full model loading service for prediction.
 - Add prediction endpoint.
+- Connect feature engineering, preprocessor transform, model probability, and decision response.
 - Test the API locally.
 - Push implementation in small, explainable commits.
