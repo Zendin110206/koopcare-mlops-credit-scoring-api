@@ -12,10 +12,8 @@ env/
 .env
 .env.local
 
-# Local context and personal working notes
-Baca INI (folder tidak akan dippake*/
-PANDUAN_KERJA_NYATA_KOOPCARE_MLOPS_DARI_NOL.md
-AUDIT_KOOPCARE_MLOPS_ZAENAL.md
+# Private local project context
+local_context/
 
 # Jupyter
 .ipynb_checkpoints/
