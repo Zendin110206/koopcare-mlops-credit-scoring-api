@@ -58,7 +58,7 @@ Example response before `models/best_model.pkl` is available:
 
 ### POST /predict
 
-Status: planned endpoint. Request and response schemas are implemented.
+Status: planned endpoint. Request/response schemas and feature mapping are implemented.
 
 Runs credit risk prediction. The endpoint itself is not active yet.
 
@@ -111,6 +111,47 @@ Notes:
 - `days_last_phone_change` must be less than or equal to `0`.
 - `ext_source_1`, `ext_source_2`, and `ext_source_3` are optional and must be between `0` and `1` when provided.
 - `flag_own_car` and `flag_own_realty` currently accept `Y` or `N`.
+
+Prepared model feature columns:
+
+```text
+CODE_GENDER
+NAME_INCOME_TYPE
+NAME_EDUCATION_TYPE
+NAME_FAMILY_STATUS
+OCCUPATION_TYPE
+FLAG_OWN_CAR
+FLAG_OWN_REALTY
+CNT_CHILDREN
+CNT_FAM_MEMBERS
+AMT_INCOME_TOTAL
+AMT_CREDIT
+AMT_ANNUITY
+AMT_GOODS_PRICE
+DAYS_EMPLOYED
+DAYS_LAST_PHONE_CHANGE
+AGE_YEARS
+DAYS_EMPLOYED_ANOM
+EXT_SOURCE_1
+EXT_SOURCE_2
+EXT_SOURCE_3
+EXT_SOURCE_MEAN
+EXT_SOURCE_MIN
+EXT_SOURCE_PROD
+DEBT_TO_INCOME
+PAYMENT_RATE
+```
+
+Prepared derived feature rules:
+
+- `AGE_YEARS = abs(days_birth) / 365`
+- `DAYS_EMPLOYED_ANOM = 1` when `days_employed == 365243`, otherwise `0`
+- anomalous `DAYS_EMPLOYED = 365243` is replaced with missing value
+- `EXT_SOURCE_MEAN` is the mean of external source scores
+- `EXT_SOURCE_MIN` is the minimum of external source scores
+- `EXT_SOURCE_PROD` is the product of external source scores
+- `DEBT_TO_INCOME = amt_credit / (amt_income_total + 1)`
+- `PAYMENT_RATE = amt_annuity / (amt_credit + 1)`
 
 ## Label Meaning
 

@@ -35,6 +35,8 @@ The current role focus is ML Ops and ML integration:
 - Added service-layer logic for model metadata so model-related logic does not stay inside `main.py`.
 - Added prediction request and response schemas.
 - Added schema validation tests for valid payloads, ownership flags, external source ranges, birth-day offsets, and human review defaults.
+- Added feature engineering mapper from `PredictionRequest` into the 25 model feature columns expected by the XGBoost artifact.
+- Added feature engineering tests for raw field mapping, derived feature calculations, employment anomaly handling, and missing external source values.
 
 ### Key Technical Decision
 
@@ -45,6 +47,8 @@ The first implemented endpoint is `/health` because it proves that the API can r
 The `/model-info` endpoint currently reads metadata from configuration. It does not load the pickle artifact yet. This keeps the endpoint useful before prediction is implemented while avoiding premature model-loading complexity.
 
 The prediction schemas are prepared before the `/predict` endpoint so the API contract is explicit before model inference is added.
+
+The feature engineering mapper is prepared before model loading so prediction input can be converted into the exact column order expected by the model artifact.
 
 ### Next Steps
 

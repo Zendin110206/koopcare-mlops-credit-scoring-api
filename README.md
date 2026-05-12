@@ -39,7 +39,7 @@ Main responsibilities in this repository:
 - `GET /` returns basic service navigation
 - `GET /health` returns service health and local model availability
 - `GET /model-info` returns configured model metadata and local artifact status
-- `POST /predict` is planned for credit risk prediction; request and response schemas are prepared
+- `POST /predict` is planned for credit risk prediction; request/response schemas and feature mapping are prepared
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
 - human-in-the-loop response design is planned for prediction output
 
@@ -202,6 +202,22 @@ Prediction request schema preview:
   "ext_source_3": 0.4
 }
 ```
+
+Prepared model feature mapping:
+
+```text
+PredictionRequest -> 25 model feature columns
+```
+
+Derived features prepared by the service layer:
+
+- `AGE_YEARS` from `days_birth`
+- `DAYS_EMPLOYED_ANOM` from the Home Credit anomaly value `365243`
+- `EXT_SOURCE_MEAN` from `ext_source_1`, `ext_source_2`, and `ext_source_3`
+- `EXT_SOURCE_MIN` from `ext_source_1`, `ext_source_2`, and `ext_source_3`
+- `EXT_SOURCE_PROD` from `ext_source_1`, `ext_source_2`, and `ext_source_3`
+- `DEBT_TO_INCOME` from `amt_credit / (amt_income_total + 1)`
+- `PAYMENT_RATE` from `amt_annuity / (amt_credit + 1)`
 
 ## Documentation
 
