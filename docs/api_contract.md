@@ -36,19 +36,23 @@ Example response before `models/best_model.pkl` is available:
 
 ### GET /model-info
 
-Status: planned.
+Status: implemented.
 
-Returns model metadata.
+Returns configured model metadata and local model artifact availability.
 
-Planned response:
+Example response before `models/best_model.pkl` is available:
 
 ```json
 {
-  "model_loaded": true,
+  "model_loaded": false,
   "model_name": "XGBoost",
   "model_version": "koopcare-xgboost-v1",
+  "model_path": "models/best_model.pkl",
   "threshold": 0.6660796,
-  "features_count": 25
+  "features_count": 25,
+  "artifact_status": "missing",
+  "metadata_source": "configuration",
+  "note": "Model artifact is not available yet. Copy best_model.pkl into models/ before enabling prediction."
 }
 ```
 

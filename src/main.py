@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 
 from src.core.config import get_settings
+from src.schemas.model_info import ModelInfoResponse
+from src.services.model_service import get_model_info
 
 
 settings = get_settings()
@@ -20,6 +22,7 @@ def read_root() -> dict[str, str]:
     return {
         "service": settings.app_name,
         "health_url": "/health",
+        "model_info_url": "/model-info",
         "docs_url": "/docs",
     }
 
@@ -33,3 +36,8 @@ def health_check() -> dict[str, str | bool]:
         "model_loaded": settings.resolved_model_path.exists(),
         "model_path": settings.model_path,
     }
+
+
+@app.get("/model-info", response_model=ModelInfoResponse, tags=["model"])
+def model_info() -> ModelInfoResponse:
+    return get_model_info(settings)

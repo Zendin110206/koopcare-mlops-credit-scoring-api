@@ -6,7 +6,7 @@ FastAPI-based machine learning inference service for KoopCare, an AI-assisted cr
 
 This repository is currently in the initial MLOps/API implementation phase.
 
-The current API includes a working health endpoint. Model metadata and prediction endpoints are planned for the next implementation checkpoints.
+The current API includes working health and model metadata endpoints. The prediction endpoint is planned for the next implementation checkpoints.
 
 ## Project Context
 
@@ -38,7 +38,7 @@ Main responsibilities in this repository:
 
 - `GET /` returns basic service navigation
 - `GET /health` returns service health and local model availability
-- `GET /model-info` is planned for model metadata
+- `GET /model-info` returns configured model metadata and local artifact status
 - `POST /predict` is planned for credit risk prediction
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
 - human-in-the-loop response design is planned for prediction output
@@ -129,6 +129,12 @@ Open local health check:
 http://127.0.0.1:8000/health
 ```
 
+Open model metadata:
+
+```text
+http://127.0.0.1:8000/model-info
+```
+
 Open FastAPI documentation:
 
 ```text
@@ -139,6 +145,36 @@ Run tests:
 
 ```powershell
 pytest
+```
+
+## Current Endpoint Examples
+
+Health check:
+
+```json
+{
+  "status": "ok",
+  "service": "KoopCare ML Inference API",
+  "environment": "development",
+  "model_loaded": false,
+  "model_path": "models/best_model.pkl"
+}
+```
+
+Model metadata:
+
+```json
+{
+  "model_loaded": false,
+  "model_name": "XGBoost",
+  "model_version": "koopcare-xgboost-v1",
+  "model_path": "models/best_model.pkl",
+  "threshold": 0.6660796,
+  "features_count": 25,
+  "artifact_status": "missing",
+  "metadata_source": "configuration",
+  "note": "Model artifact is not available yet. Copy best_model.pkl into models/ before enabling prediction."
+}
 ```
 
 ## Documentation

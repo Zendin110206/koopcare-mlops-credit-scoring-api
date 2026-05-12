@@ -30,7 +30,10 @@ class Settings:
     app_env: str
     app_debug: bool
     model_path: str
+    model_name: str
     model_version: str
+    model_threshold: float
+    model_features_count: int
     api_host: str
     api_port: int
 
@@ -47,7 +50,10 @@ def get_settings() -> Settings:
         app_env=os.getenv("APP_ENV", "development"),
         app_debug=_get_bool_env("APP_DEBUG", False),
         model_path=os.getenv("MODEL_PATH", "models/best_model.pkl"),
+        model_name=os.getenv("MODEL_NAME", "XGBoost"),
         model_version=os.getenv("MODEL_VERSION", "koopcare-xgboost-v1"),
+        model_threshold=float(os.getenv("MODEL_THRESHOLD", "0.6660796")),
+        model_features_count=_get_int_env("MODEL_FEATURES_COUNT", 25),
         api_host=os.getenv("API_HOST", "127.0.0.1"),
         api_port=_get_int_env("API_PORT", 8000),
     )

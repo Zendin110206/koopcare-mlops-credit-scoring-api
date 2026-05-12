@@ -30,6 +30,9 @@ The current role focus is ML Ops and ML integration:
 - Initialized Git repository and connected it to the public GitHub repository.
 - Implemented the first FastAPI endpoints: `GET /` and `GET /health`.
 - Added a basic test suite for the root and health endpoints.
+- Implemented `GET /model-info` for configured model metadata and local artifact status.
+- Added a response schema for model metadata.
+- Added service-layer logic for model metadata so model-related logic does not stay inside `main.py`.
 
 ### Key Technical Decision
 
@@ -37,9 +40,10 @@ The API implementation should follow the actual model artifact instead of outdat
 
 The first implemented endpoint is `/health` because it proves that the API can run before adding model loading complexity.
 
+The `/model-info` endpoint currently reads metadata from configuration. It does not load the pickle artifact yet. This keeps the endpoint useful before prediction is implemented while avoiding premature model-loading complexity.
+
 ### Next Steps
 
-- Implement model metadata endpoint.
 - Implement request and response schemas for prediction.
 - Implement model loading service.
 - Add prediction endpoint.
