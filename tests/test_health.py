@@ -47,5 +47,7 @@ def test_model_info_endpoint_returns_expected_metadata() -> None:
     assert data["threshold"] == 0.6660796
     assert data["features_count"] == 25
     assert data["artifact_status"] == "missing"
+    assert data["artifact_keys"] == []
+    assert data["artifact_error"] is None
     assert data["metadata_source"] == "configuration"
     assert "best_model.pkl" in data["note"]

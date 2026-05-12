@@ -28,6 +28,25 @@ threshold: 0.6660796
 required_features: 25
 ```
 
+## Expected Artifact Structure
+
+The API expects `best_model.pkl` to be a trusted joblib/pickle artifact containing these keys:
+
+```text
+features
+model
+preprocessor
+threshold
+```
+
+The artifact may also contain:
+
+```text
+model_name
+```
+
+Only use model artifacts from trusted KoopCare/team sources. Python pickle/joblib files can execute code during loading, so do not load unknown artifacts.
+
 ## How to Prepare Locally
 
 Download or copy `best_model.pkl` into this directory:

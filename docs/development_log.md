@@ -37,6 +37,8 @@ The current role focus is ML Ops and ML integration:
 - Added schema validation tests for valid payloads, ownership flags, external source ranges, birth-day offsets, and human review defaults.
 - Added feature engineering mapper from `PredictionRequest` into the 25 model feature columns expected by the XGBoost artifact.
 - Added feature engineering tests for raw field mapping, derived feature calculations, employment anomaly handling, and missing external source values.
+- Added safe model artifact metadata inspection for `best_model.pkl`.
+- Added artifact metadata tests for missing, valid, and invalid artifact scenarios.
 
 ### Key Technical Decision
 
@@ -50,9 +52,11 @@ The prediction schemas are prepared before the `/predict` endpoint so the API co
 
 The feature engineering mapper is prepared before model loading so prediction input can be converted into the exact column order expected by the model artifact.
 
+The model metadata endpoint now attempts to read artifact metadata when `best_model.pkl` exists, but it falls back safely to configuration metadata when the artifact is missing or invalid.
+
 ### Next Steps
 
-- Implement model loading service.
+- Implement full model loading service for prediction.
 - Add prediction endpoint.
 - Test the API locally.
 - Push implementation in small, explainable commits.

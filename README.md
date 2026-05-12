@@ -172,6 +172,8 @@ Model metadata:
   "threshold": 0.6660796,
   "features_count": 25,
   "artifact_status": "missing",
+  "artifact_keys": [],
+  "artifact_error": null,
   "metadata_source": "configuration",
   "note": "Model artifact is not available yet. Copy best_model.pkl into models/ before enabling prediction."
 }
@@ -218,6 +220,12 @@ Derived features prepared by the service layer:
 - `EXT_SOURCE_PROD` from `ext_source_1`, `ext_source_2`, and `ext_source_3`
 - `DEBT_TO_INCOME` from `amt_credit / (amt_income_total + 1)`
 - `PAYMENT_RATE` from `amt_annuity / (amt_credit + 1)`
+
+Model artifact metadata handling:
+
+- missing artifact returns `artifact_status: "missing"`
+- valid artifact returns `artifact_status: "available"` and `metadata_source: "artifact"`
+- invalid artifact returns `artifact_status: "invalid"` without crashing the API
 
 ## Documentation
 

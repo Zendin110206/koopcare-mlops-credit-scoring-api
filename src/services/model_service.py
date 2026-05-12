@@ -1,3 +1,6 @@
+from typing import Any
+
+import joblib
 import numpy as np
 import pandas as pd
 
@@ -34,31 +37,87 @@ MODEL_FEATURE_COLUMNS = [
     "PAYMENT_RATE",
 ]
 
+REQUIRED_ARTIFACT_KEYS = {"features", "model", "preprocessor", "threshold"}
+
 
 def get_model_info(settings: Settings) -> ModelInfoResponse:
-    model_exists = settings.resolved_model_path.exists()
-
-    artifact_status = "available" if model_exists else "missing"
-    note = (
-        "Model artifact is available locally."
-        if model_exists
-        else (
-            "Model artifact is not available yet. Copy best_model.pkl into "
-            "models/ before enabling prediction."
+    if not settings.resolved_model_path.exists():
+        return ModelInfoResponse(
+            model_loaded=False,
+            model_name=settings.model_name,
+            model_version=settings.model_version,
+            model_path=settings.model_path,
+            threshold=settings.model_threshold,
+            features_count=settings.model_features_count,
+            artifact_status="missing",
+            artifact_keys=[],
+            artifact_error=None,
+            metadata_source="configuration",
+            note=(
+                "Model artifact is not available yet. Copy best_model.pkl into "
+                "models/ before enabling prediction."
+            ),
         )
-    )
+
+    try:
+        artifact_metadata = load_model_artifact_metadata(settings)
+    except Exception as exc:
+        return ModelInfoResponse(
+            model_loaded=False,
+            model_name=settings.model_name,
+            model_version=settings.model_version,
+            model_path=settings.model_path,
+            threshold=settings.model_threshold,
+            features_count=settings.model_features_count,
+            artifact_status="invalid",
+            artifact_keys=[],
+            artifact_error=str(exc),
+            metadata_source="configuration",
+            note=(
+                "Model artifact exists but could not be validated. Use a trusted "
+                "KoopCare best_model.pkl artifact before enabling prediction."
+            ),
+        )
 
     return ModelInfoResponse(
-        model_loaded=model_exists,
-        model_name=settings.model_name,
+        model_loaded=True,
+        model_name=artifact_metadata["model_name"],
         model_version=settings.model_version,
         model_path=settings.model_path,
-        threshold=settings.model_threshold,
-        features_count=settings.model_features_count,
-        artifact_status=artifact_status,
-        metadata_source="configuration",
-        note=note,
+        threshold=artifact_metadata["threshold"],
+        features_count=artifact_metadata["features_count"],
+        artifact_status="available",
+        artifact_keys=artifact_metadata["artifact_keys"],
+        artifact_error=None,
+        metadata_source="artifact",
+        note="Model artifact is available and metadata was read from best_model.pkl.",
     )
+
+
+def load_model_artifact_metadata(settings: Settings) -> dict[str, Any]:
+    artifact = joblib.load(settings.resolved_model_path)
+
+    if not isinstance(artifact, dict):
+        raise TypeError("Model artifact must be a dictionary.")
+
+    missing_keys = REQUIRED_ARTIFACT_KEYS.difference(artifact)
+    if missing_keys:
+        missing = ", ".join(sorted(missing_keys))
+        raise ValueError(f"Model artifact is missing required keys: {missing}.")
+
+    features = artifact["features"]
+    if not isinstance(features, (list, tuple)):
+        raise TypeError("Model artifact 'features' value must be a list or tuple.")
+
+    threshold = float(artifact["threshold"])
+    model_name = str(artifact.get("model_name", settings.model_name))
+
+    return {
+        "model_name": model_name,
+        "threshold": threshold,
+        "features_count": len(features),
+        "artifact_keys": sorted(artifact.keys()),
+    }
 
 
 def build_model_feature_frame(payload: PredictionRequest) -> pd.DataFrame:

@@ -51,9 +51,32 @@ Example response before `models/best_model.pkl` is available:
   "threshold": 0.6660796,
   "features_count": 25,
   "artifact_status": "missing",
+  "artifact_keys": [],
+  "artifact_error": null,
   "metadata_source": "configuration",
   "note": "Model artifact is not available yet. Copy best_model.pkl into models/ before enabling prediction."
 }
+```
+
+Artifact status meaning:
+
+- `missing`: configured artifact path does not exist yet
+- `available`: artifact exists, can be loaded, and contains required keys
+- `invalid`: artifact exists but cannot be loaded or does not match the expected structure
+
+Expected artifact keys:
+
+```text
+features
+model
+preprocessor
+threshold
+```
+
+Optional artifact key:
+
+```text
+model_name
 ```
 
 ### POST /predict
