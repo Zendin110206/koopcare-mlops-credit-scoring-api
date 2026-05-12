@@ -51,6 +51,7 @@ def test_root_endpoint_points_to_docs_and_health() -> None:
     assert data["service"] == "KoopCare ML Inference API"
     assert data["health_url"] == "/health"
     assert data["model_info_url"] == "/model-info"
+    assert data["predict_url"] == "/predict"
     assert data["docs_url"] == "/docs"
 
 

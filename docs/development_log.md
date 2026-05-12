@@ -49,6 +49,10 @@ The current role focus is ML Ops and ML integration:
 - Added prediction inference service method that connects feature engineering, preprocessing, model probability, and response construction.
 - Added prediction inference tests for successful `LAYAK` and `TIDAK_LAYAK` responses, invalid probability shape, invalid probability value, and transform failures.
 - Verified the local `best_model.pkl` artifact can produce a decision-support response from the example payload.
+- Implemented `POST /predict` endpoint for HTTP prediction inference.
+- Added endpoint-level error handling for missing artifact, invalid artifact, and prediction runtime failure.
+- Added endpoint tests for successful prediction, missing model, invalid model, failed inference, and invalid request validation.
+- Verified `POST /predict` through a local HTTP request using the real `best_model.pkl` artifact.
 
 ### Key Technical Decision
 
@@ -77,9 +81,11 @@ Model loading now validates runtime readiness:
 
 Prediction inference is implemented in the service layer before exposing the HTTP endpoint. This keeps the riskiest ML path testable without mixing it with request routing and HTTP error handling.
 
+The prediction endpoint is now a thin HTTP wrapper around the service layer. FastAPI handles request validation, while the endpoint translates ML/runtime errors into explicit HTTP errors.
+
 ### Next Steps
 
-- Add prediction endpoint.
-- Add HTTP error handling for missing, invalid, or failing model inference.
+- Add Postman collection or example request assets.
+- Add more integration documentation for backend/mobile teams.
 - Test the API locally.
 - Push implementation in small, explainable commits.

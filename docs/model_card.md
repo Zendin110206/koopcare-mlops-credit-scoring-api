@@ -46,10 +46,11 @@ The current artifact requires a compatible scikit-learn runtime. The API environ
 
 ## Local Inference Verification
 
-The current service-layer inference path has been verified with the local artifact:
+The current prediction endpoint has been verified with the local artifact:
 
 ```text
-PredictionRequest
+POST /predict
+-> PredictionRequest
 -> feature engineering
 -> ColumnTransformer preprocessing
 -> XGBClassifier predict_proba

@@ -6,7 +6,7 @@ FastAPI-based machine learning inference service for KoopCare, an AI-assisted cr
 
 This repository is currently in the initial MLOps/API implementation phase.
 
-The current API includes working health and model metadata endpoints. The service layer can now load the local model artifact and run prediction inference internally. The prediction endpoint is planned for the next implementation checkpoint.
+The current API includes working health, model metadata, and prediction endpoints. The prediction endpoint loads the local model artifact, applies the saved preprocessor, runs XGBoost probability inference, and returns a human-in-the-loop decision-support response.
 
 ## Project Context
 
@@ -39,9 +39,9 @@ Main responsibilities in this repository:
 - `GET /` returns basic service navigation
 - `GET /health` returns service health and local model availability
 - `GET /model-info` returns configured model metadata and validated local artifact status
-- `POST /predict` is planned for credit risk prediction; request/response schemas, feature mapping, model inference, and decision helpers are prepared in the service layer
+- `POST /predict` returns credit risk prediction and decision-support output
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
-- human-in-the-loop response design is planned for prediction output
+- human-in-the-loop response design is implemented for prediction output
 
 ## Current Model Direction
 
@@ -272,7 +272,7 @@ Prepared prediction decision helpers:
 - confidence is derived from the distance between probability and threshold
 - every prediction response defaults to `human_review_required: true`
 
-Prepared prediction inference flow:
+Prediction inference flow:
 
 ```text
 PredictionRequest
@@ -283,7 +283,7 @@ PredictionRequest
 -> PredictionResponse
 ```
 
-Local artifact verification with the example payload currently returns:
+`POST /predict` with the example payload currently returns:
 
 ```json
 {
@@ -299,7 +299,12 @@ Local artifact verification with the example payload currently returns:
 }
 ```
 
-This result is produced by the service layer. The public HTTP endpoint `POST /predict` is still planned.
+Prediction endpoint error handling:
+
+- missing local model artifact returns HTTP `503` with `model_artifact_missing`
+- invalid model artifact returns HTTP `503` with `model_artifact_invalid`
+- runtime inference failure returns HTTP `500` with `prediction_failed`
+- invalid request body returns FastAPI/Pydantic HTTP `422`
 
 ## Documentation
 

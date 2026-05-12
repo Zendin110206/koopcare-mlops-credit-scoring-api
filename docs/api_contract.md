@@ -116,11 +116,11 @@ Example response after a valid local artifact is available:
 
 ### POST /predict
 
-Status: planned endpoint. Request/response schemas, feature mapping, model inference service method, and decision helpers are implemented.
+Status: implemented.
 
-Runs credit risk prediction. The endpoint itself is not active yet.
+Runs credit risk prediction and returns AI decision-support output for cooperative officer review.
 
-Prepared internal service flow:
+Internal service flow:
 
 ```text
 PredictionRequest
@@ -174,7 +174,7 @@ Prepared response schema:
 }
 ```
 
-Local service-layer verification with the same example payload currently returns:
+Response from `POST /predict` with the same example payload:
 
 ```json
 {
@@ -191,7 +191,47 @@ Local service-layer verification with the same example payload currently returns
 }
 ```
 
-This is not exposed through HTTP yet. It confirms that the model service can already run the core inference path using the local artifact.
+Error response examples:
+
+Missing local model artifact:
+
+```json
+{
+  "detail": {
+    "error": "model_artifact_missing",
+    "message": "Model artifact not found at models/best_model.pkl."
+  }
+}
+```
+
+Invalid model artifact:
+
+```json
+{
+  "detail": {
+    "error": "model_artifact_invalid",
+    "message": "Model artifact is missing required keys: model, preprocessor, threshold."
+  }
+}
+```
+
+Prediction runtime failure:
+
+```json
+{
+  "detail": {
+    "error": "prediction_failed",
+    "message": "Unable to generate prediction: transform failed"
+  }
+}
+```
+
+HTTP status mapping:
+
+- `200`: prediction generated successfully
+- `422`: request body validation failed
+- `503`: model artifact is missing or invalid
+- `500`: model artifact was loaded but inference failed at runtime
 
 Notes:
 
