@@ -6,7 +6,7 @@ FastAPI-based machine learning inference service for KoopCare, an AI-assisted cr
 
 This repository is currently in the initial MLOps/API implementation phase.
 
-The current API includes working health and model metadata endpoints. The service layer can now load and validate the local model artifact runtime components. The prediction endpoint is planned for the next implementation checkpoints.
+The current API includes working health and model metadata endpoints. The service layer can now load the local model artifact and run prediction inference internally. The prediction endpoint is planned for the next implementation checkpoint.
 
 ## Project Context
 
@@ -39,7 +39,7 @@ Main responsibilities in this repository:
 - `GET /` returns basic service navigation
 - `GET /health` returns service health and local model availability
 - `GET /model-info` returns configured model metadata and validated local artifact status
-- `POST /predict` is planned for credit risk prediction; request/response schemas, feature mapping, and decision helpers are prepared
+- `POST /predict` is planned for credit risk prediction; request/response schemas, feature mapping, model inference, and decision helpers are prepared in the service layer
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
 - human-in-the-loop response design is planned for prediction output
 
@@ -271,6 +271,35 @@ Prepared prediction decision helpers:
 - risk level is derived from probability bands around the threshold
 - confidence is derived from the distance between probability and threshold
 - every prediction response defaults to `human_review_required: true`
+
+Prepared prediction inference flow:
+
+```text
+PredictionRequest
+-> build_model_feature_frame(...)
+-> preprocessor.transform(...)
+-> model.predict_proba(...)
+-> class 1 probability as prob_default
+-> PredictionResponse
+```
+
+Local artifact verification with the example payload currently returns:
+
+```json
+{
+  "ai_recommendation": "LAYAK",
+  "risk_level": "MEDIUM",
+  "prob_default": 0.581492,
+  "threshold": 0.66608,
+  "confidence": 0.126993,
+  "model_name": "XGBoost",
+  "model_version": "koopcare-xgboost-v1",
+  "human_review_required": true,
+  "final_decision": null
+}
+```
+
+This result is produced by the service layer. The public HTTP endpoint `POST /predict` is still planned.
 
 ## Documentation
 

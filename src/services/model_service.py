@@ -57,6 +57,10 @@ class ModelArtifactInvalidError(ModelArtifactError):
     """Raised when the model artifact exists but cannot be used safely."""
 
 
+class ModelPredictionError(RuntimeError):
+    """Raised when a loaded model cannot generate a valid prediction."""
+
+
 @dataclass(frozen=True)
 class LoadedModelArtifact:
     model: Any
@@ -152,6 +156,30 @@ def load_model_artifact_metadata(settings: Settings) -> dict[str, Any]:
     }
 
 
+def predict_credit_risk(
+    payload: PredictionRequest,
+    settings: Settings,
+) -> PredictionResponse:
+    loaded_artifact = load_model_artifact(settings)
+    feature_frame = build_model_feature_frame(payload)
+    model_input = feature_frame[loaded_artifact.features]
+
+    try:
+        transformed_features = loaded_artifact.preprocessor.transform(model_input)
+        probabilities = loaded_artifact.model.predict_proba(transformed_features)
+    except Exception as exc:
+        raise ModelPredictionError(f"Unable to generate prediction: {exc}") from exc
+
+    prob_default = _extract_default_probability(probabilities)
+
+    return build_prediction_response(
+        prob_default=prob_default,
+        threshold=loaded_artifact.threshold,
+        model_name=loaded_artifact.model_name,
+        model_version=settings.model_version,
+    )
+
+
 def _validate_model_artifact(
     artifact: Any,
     settings: Settings,
@@ -209,7 +237,6 @@ def _validate_model_artifact(
         model_name=str(artifact.get("model_name", settings.model_name)),
         artifact_keys=sorted(artifact.keys()),
     )
-
 
 
 def build_model_feature_frame(payload: PredictionRequest) -> pd.DataFrame:
@@ -310,6 +337,28 @@ def build_prediction_response(
         final_decision=None,
         note=DECISION_SUPPORT_NOTE,
     )
+
+
+def _extract_default_probability(probabilities: Any) -> float:
+    probability_array = np.asarray(probabilities)
+
+    if (
+        probability_array.ndim != 2
+        or probability_array.shape[0] != 1
+        or probability_array.shape[1] < 2
+    ):
+        raise ModelPredictionError(
+            "predict_proba must return one row with probability columns for "
+            "class 0 and class 1."
+        )
+
+    try:
+        prob_default = float(probability_array[0, 1])
+        _validate_probability_value(prob_default, "prob_default")
+    except (TypeError, ValueError) as exc:
+        raise ModelPredictionError(str(exc)) from exc
+
+    return prob_default
 
 
 def _validate_probability_value(value: float, name: str) -> None:

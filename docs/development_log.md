@@ -46,6 +46,9 @@ The current role focus is ML Ops and ML integration:
 - Added full model artifact loading with validation for model, preprocessor, feature order, and threshold.
 - Added model loading tests for runtime components and invalid artifact structures.
 - Made endpoint tests independent from local model artifact presence.
+- Added prediction inference service method that connects feature engineering, preprocessing, model probability, and response construction.
+- Added prediction inference tests for successful `LAYAK` and `TIDAK_LAYAK` responses, invalid probability shape, invalid probability value, and transform failures.
+- Verified the local `best_model.pkl` artifact can produce a decision-support response from the example payload.
 
 ### Key Technical Decision
 
@@ -72,9 +75,11 @@ Model loading now validates runtime readiness:
 - feature names must match the expected 25 columns in order
 - threshold must be between `0` and `1`
 
+Prediction inference is implemented in the service layer before exposing the HTTP endpoint. This keeps the riskiest ML path testable without mixing it with request routing and HTTP error handling.
+
 ### Next Steps
 
 - Add prediction endpoint.
-- Connect feature engineering, preprocessor transform, model probability, and decision response.
+- Add HTTP error handling for missing, invalid, or failing model inference.
 - Test the API locally.
 - Push implementation in small, explainable commits.

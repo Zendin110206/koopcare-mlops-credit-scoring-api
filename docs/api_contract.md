@@ -116,9 +116,20 @@ Example response after a valid local artifact is available:
 
 ### POST /predict
 
-Status: planned endpoint. Request/response schemas, feature mapping, and decision helpers are implemented.
+Status: planned endpoint. Request/response schemas, feature mapping, model inference service method, and decision helpers are implemented.
 
 Runs credit risk prediction. The endpoint itself is not active yet.
+
+Prepared internal service flow:
+
+```text
+PredictionRequest
+-> build_model_feature_frame(...)
+-> loaded_artifact.preprocessor.transform(...)
+-> loaded_artifact.model.predict_proba(...)
+-> prob_default from class 1 probability
+-> build_prediction_response(...)
+```
 
 Prepared request schema:
 
@@ -162,6 +173,25 @@ Prepared response schema:
   "note": "AI recommendation only. Final financing decision must be reviewed and approved by cooperative officers."
 }
 ```
+
+Local service-layer verification with the same example payload currently returns:
+
+```json
+{
+  "ai_recommendation": "LAYAK",
+  "risk_level": "MEDIUM",
+  "prob_default": 0.581492,
+  "threshold": 0.66608,
+  "confidence": 0.126993,
+  "model_name": "XGBoost",
+  "model_version": "koopcare-xgboost-v1",
+  "human_review_required": true,
+  "final_decision": null,
+  "note": "AI recommendation only. Final financing decision must be reviewed and approved by cooperative officers."
+}
+```
+
+This is not exposed through HTTP yet. It confirms that the model service can already run the core inference path using the local artifact.
 
 Notes:
 

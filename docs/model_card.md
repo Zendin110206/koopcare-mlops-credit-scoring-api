@@ -44,6 +44,29 @@ optional artifact key: model_name
 
 The current artifact requires a compatible scikit-learn runtime. The API environment pins `scikit-learn==1.6.1` because newer versions can fail to unpickle the current preprocessor artifact.
 
+## Local Inference Verification
+
+The current service-layer inference path has been verified with the local artifact:
+
+```text
+PredictionRequest
+-> feature engineering
+-> ColumnTransformer preprocessing
+-> XGBClassifier predict_proba
+-> threshold-based decision support response
+```
+
+Using the documented example payload, the local artifact returned:
+
+```text
+prob_default: 0.581492
+threshold: 0.66608
+ai_recommendation: LAYAK
+risk_level: MEDIUM
+```
+
+This is a prototype verification result, not a production performance claim.
+
 ## Label Meaning
 
 ```text
