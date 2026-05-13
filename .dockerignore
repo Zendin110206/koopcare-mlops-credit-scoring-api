@@ -1,0 +1,44 @@
+# Git and local environments
+.git/
+.venv/
+venv/
+env/
+
+# Local configuration and private context
+.env
+.env.local
+local_context/
+
+# Python and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Data and model artifacts
+data/*
+!data/.gitkeep
+!data/README.md
+models/*
+!models/.gitkeep
+!models/README.md
+
+# Generated outputs
+outputs/
+reports/
+*.csv
+*.xlsx
+*.parquet
+*.log
+logs/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/

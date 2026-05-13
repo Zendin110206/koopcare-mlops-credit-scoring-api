@@ -68,6 +68,18 @@ Open FastAPI Swagger UI:
 http://127.0.0.1:8000/docs
 ```
 
+Docker alternative:
+
+```powershell
+docker compose up --build
+```
+
+See:
+
+```text
+docs/docker_usage.md
+```
+
 ## 3. Check Service Health
 
 Request:

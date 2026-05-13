@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: koopcare-mlops-credit-scoring-api:local
+    container_name: koopcare-mlops-api
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: KoopCare ML Inference API
+      APP_ENV: development
+      APP_DEBUG: "false"
+      MODEL_PATH: models/best_model.pkl
+      MODEL_NAME: XGBoost
+      MODEL_VERSION: koopcare-xgboost-v1
+      MODEL_THRESHOLD: "0.6660796"
+      MODEL_FEATURES_COUNT: "25"
+      API_HOST: 0.0.0.0
+      API_PORT: "8000"
+    volumes:
+      - ./models:/app/models:ro
+    restart: unless-stopped

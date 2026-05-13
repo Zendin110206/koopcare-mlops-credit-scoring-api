@@ -58,6 +58,8 @@ The current role focus is ML Ops and ML integration:
 - Added documentation asset tests to make sure the Postman collection stays valid JSON and continues documenting the core endpoints.
 - Added a model handoff contract for retrained artifacts, dependency compatibility, feature order, threshold, and `EXT_SOURCE` migration.
 - Added a team integration contract for backend, frontend, and mobile teams using the prediction API safely.
+- Added Docker support for reproducible local API serving without baking `best_model.pkl` into the image.
+- Added Docker asset tests for Dockerfile, `.dockerignore`, Compose model volume behavior, and Docker usage documentation.
 
 ### Key Technical Decision
 
@@ -94,9 +96,10 @@ Prediction usage examples and the Postman collection were added after the endpoi
 
 The model handoff and team integration contracts were added because the ML model may be retrained. A retrained model can affect artifact structure, feature order, request fields, frontend/mobile forms, backend payload mapping, and documentation. Model replacement must therefore be deliberate, validated, and coordinated.
 
+Docker support mounts `./models` into the container as read-only instead of copying the model artifact into the image. This keeps the source image clean while still allowing FE/BE/mobile teams to run the local API when `models/best_model.pkl` is available.
+
 ### Next Steps
 
-- Add Dockerfile for reproducible local serving.
 - Add GitHub Actions for automated tests on push.
 - Update API/request examples when the retrained model contract changes.
 - Push implementation in small, explainable commits.

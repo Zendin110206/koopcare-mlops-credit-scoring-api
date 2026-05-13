@@ -42,6 +42,7 @@ Main responsibilities in this repository:
 - `POST /predict` returns credit risk prediction and decision-support output
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
 - human-in-the-loop response design is implemented for prediction output
+- Docker support is available for reproducible local API serving
 
 ## Current Model Direction
 
@@ -81,6 +82,7 @@ The model artifact itself is not committed to this repository because model file
 ├── docs/
 │   ├── api_contract.md
 │   ├── development_log.md
+│   ├── docker_usage.md
 │   ├── model_handoff_contract.md
 │   ├── model_card.md
 │   ├── prediction_usage_examples.md
@@ -94,6 +96,8 @@ The model artifact itself is not committed to this repository because model file
 │   └── services/
 ├── tests/
 ├── .env.example
+├── Dockerfile
+├── docker-compose.yml
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -127,6 +131,14 @@ Run the API:
 ```powershell
 uvicorn src.main:app --reload
 ```
+
+Or run with Docker Compose:
+
+```powershell
+docker compose up --build
+```
+
+Docker mounts `./models` into the container as read-only. The image does not include `models/best_model.pkl`.
 
 Open local health check:
 
@@ -323,6 +335,7 @@ Prediction endpoint error handling:
 - [Model Handoff Contract](docs/model_handoff_contract.md)
 - [Prediction Usage Examples](docs/prediction_usage_examples.md)
 - [Team Integration Contract](docs/team_integration_contract.md)
+- [Docker Usage](docs/docker_usage.md)
 - [Development Log](docs/development_log.md)
 - [Data Notes](data/README.md)
 - [Model Artifact Notes](models/README.md)

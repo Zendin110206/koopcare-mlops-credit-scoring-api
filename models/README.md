@@ -102,3 +102,15 @@ docs/model_handoff_contract.md
 ```
 
 Do not silently replace `models/best_model.pkl` with a retrained model that changes feature order, request fields, probability class order, or dependency requirements.
+
+## Docker Note
+
+The Docker image does not include `models/best_model.pkl`.
+
+When using Docker Compose, the local `models/` directory is mounted into the container as read-only:
+
+```text
+./models:/app/models:ro
+```
+
+This keeps the model artifact local while allowing the containerized API to load it.
