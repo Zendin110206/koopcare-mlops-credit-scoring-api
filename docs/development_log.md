@@ -56,6 +56,8 @@ The current role focus is ML Ops and ML integration:
 - Added prediction usage examples with PowerShell, curl, expected response, validation error examples, and model artifact error examples.
 - Added a Postman collection for root, health, model-info, prediction, and invalid-request validation flows.
 - Added documentation asset tests to make sure the Postman collection stays valid JSON and continues documenting the core endpoints.
+- Added a model handoff contract for retrained artifacts, dependency compatibility, feature order, threshold, and `EXT_SOURCE` migration.
+- Added a team integration contract for backend, frontend, and mobile teams using the prediction API safely.
 
 ### Key Technical Decision
 
@@ -90,9 +92,11 @@ After the progress 01-10 review, the binary `predict_proba(...)` validation was 
 
 Prediction usage examples and the Postman collection were added after the endpoint was implemented so the examples match the real API behavior instead of documenting a planned contract too early.
 
+The model handoff and team integration contracts were added because the ML model may be retrained. A retrained model can affect artifact structure, feature order, request fields, frontend/mobile forms, backend payload mapping, and documentation. Model replacement must therefore be deliberate, validated, and coordinated.
+
 ### Next Steps
 
 - Add Dockerfile for reproducible local serving.
 - Add GitHub Actions for automated tests on push.
-- Add more integration documentation for backend/mobile teams if the frontend/backend contract changes.
+- Update API/request examples when the retrained model contract changes.
 - Push implementation in small, explainable commits.

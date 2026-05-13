@@ -126,6 +126,13 @@ For copy-paste local usage examples, see:
 docs/prediction_usage_examples.md
 ```
 
+For retrained model and FE/BE/mobile coordination notes, see:
+
+```text
+docs/model_handoff_contract.md
+docs/team_integration_contract.md
+```
+
 Internal service flow:
 
 ```text

@@ -111,6 +111,18 @@ For production BMT deployment, the model should be retrained using BMT-native fe
 - late payment count
 - warning count
 
+## Future Retraining Handoff
+
+If the ML team retrains the model, the new artifact must be checked against the API handoff contract before it replaces the local runtime artifact.
+
+See:
+
+```text
+docs/model_handoff_contract.md
+```
+
+If retraining removes `EXT_SOURCE` features, the API request schema, feature engineering mapper, tests, Postman collection, and frontend/backend/mobile payload mapping may need to change together.
+
 ## Intended Use
 
 This model may be used for:

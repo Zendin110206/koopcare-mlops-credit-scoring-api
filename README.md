@@ -81,8 +81,10 @@ The model artifact itself is not committed to this repository because model file
 ├── docs/
 │   ├── api_contract.md
 │   ├── development_log.md
+│   ├── model_handoff_contract.md
 │   ├── model_card.md
-│   └── prediction_usage_examples.md
+│   ├── prediction_usage_examples.md
+│   └── team_integration_contract.md
 ├── models/
 ├── postman/
 ├── references/
@@ -318,7 +320,9 @@ Prediction endpoint error handling:
 
 - [API Contract](docs/api_contract.md)
 - [Model Card](docs/model_card.md)
+- [Model Handoff Contract](docs/model_handoff_contract.md)
 - [Prediction Usage Examples](docs/prediction_usage_examples.md)
+- [Team Integration Contract](docs/team_integration_contract.md)
 - [Development Log](docs/development_log.md)
 - [Data Notes](data/README.md)
 - [Model Artifact Notes](models/README.md)

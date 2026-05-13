@@ -48,3 +48,21 @@ def test_prediction_usage_guide_exists() -> None:
     assert "POST /predict" in guide
     assert "human_review_required" in guide
     assert "model_artifact_missing" in guide
+
+
+def test_model_handoff_contract_documents_retraining_risks() -> None:
+    guide = Path("docs/model_handoff_contract.md").read_text(encoding="utf-8")
+
+    assert "No silent model replacement" in guide
+    assert "EXT_SOURCE" in guide
+    assert "predict_proba" in guide
+    assert "exactly two probability columns" in guide
+
+
+def test_team_integration_contract_documents_client_responsibilities() -> None:
+    guide = Path("docs/team_integration_contract.md").read_text(encoding="utf-8")
+
+    assert "backend" in guide.lower()
+    assert "frontend" in guide.lower()
+    assert "mobile" in guide.lower()
+    assert "AI recommends, cooperative officers decide" in guide

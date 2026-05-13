@@ -355,3 +355,12 @@ The current model is trained on Home Credit style data, not real BMT production 
 The request still includes `EXT_SOURCE` fields because the current prototype artifact expects them.
 
 For production BMT deployment, the model should be retrained using cooperative-native features such as saving balance, member active duration, saving consistency, previous financing history, and repayment behavior.
+
+If a retrained model changes the required request fields, update the API contract, Postman collection, and integration notes before FE/BE/mobile teams consume the new behavior.
+
+Related documents:
+
+```text
+docs/model_handoff_contract.md
+docs/team_integration_contract.md
+```

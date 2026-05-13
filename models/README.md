@@ -4,7 +4,7 @@ This directory stores local machine learning model artifacts used by the KoopCar
 
 ## Expected Artifact
 
-The planned API expects this local file:
+The API expects this local file:
 
 ```text
 models/best_model.pkl
@@ -94,3 +94,11 @@ GET /model-info
 This model is a prototype trained on Home Credit style data, not real BMT production data.
 
 The model is used as decision support only. Final financing decisions must remain under cooperative officer review.
+
+If the ML team provides a retrained artifact, validate it against:
+
+```text
+docs/model_handoff_contract.md
+```
+
+Do not silently replace `models/best_model.pkl` with a retrained model that changes feature order, request fields, probability class order, or dependency requirements.
