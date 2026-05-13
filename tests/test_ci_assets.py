@@ -8,8 +8,8 @@ REVIEWER_QUICKSTART_PATH = Path("docs/reviewer_quickstart.md")
 def test_ci_workflow_exists_and_runs_core_checks() -> None:
     workflow = CI_WORKFLOW_PATH.read_text(encoding="utf-8")
 
-    assert "actions/checkout@v4" in workflow
-    assert "actions/setup-python@v5" in workflow
+    assert "actions/checkout@v6" in workflow
+    assert "actions/setup-python@v6" in workflow
     assert 'python-version: "3.12"' in workflow
     assert "python -m pip install -r requirements.txt" in workflow
     assert "python -m pip check" in workflow

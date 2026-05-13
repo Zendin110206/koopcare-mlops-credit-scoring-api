@@ -66,6 +66,7 @@ The current role focus is ML Ops and ML integration:
 - Added Express backend adapter examples for team handoff, including an ML API client, loan AI payload/response mapper, and example loan scoring integration function.
 - Documented the score direction mismatch between the admin repository's `ai_score` concept and the ML API's `prob_default` output.
 - Added tests that keep the backend adapter examples present and aligned with the integration contract.
+- Updated GitHub Actions workflow actions to Node 24-compatible major versions after GitHub CI reported Node 20 action runtime deprecation warnings.
 
 ### Key Technical Decision
 
@@ -107,6 +108,8 @@ Docker support mounts `./models` into the container as read-only instead of copy
 GitHub Actions CI was added after local and Docker execution were stable. CI does not require `models/best_model.pkl`; the automated tests intentionally cover missing-model behavior and dummy artifact scenarios so the repository stays testable from a clean clone.
 
 The Express backend adapter examples were added after auditing the admin repository integration gap. The admin repository already has a loan review flow and an `ai_score` concept, but the ML API returns `prob_default`, where a higher value means higher default risk. The example adapter therefore documents the safer storage approach: keep the full ML response and derive `eligibility_score = round((1 - prob_default) * 100)` only when a UI needs a score where higher means more eligible.
+
+The CI workflow was updated from `actions/checkout@v4` and `actions/setup-python@v5` to Node 24-compatible major versions after GitHub Actions reported runtime deprecation warnings. This keeps the portfolio CI healthier for future reviewer runs.
 
 ### Next Steps
 
