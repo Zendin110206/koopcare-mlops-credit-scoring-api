@@ -67,6 +67,54 @@ The backend should not:
 - bypass cooperative officer review;
 - send incomplete or guessed values just to satisfy the schema.
 
+Reference code for an Express backend handoff is available in:
+
+```text
+examples/express_backend_adapter/
+```
+
+This folder includes:
+
+```text
+mlScoringClient.js
+loanAiMapping.js
+exampleLoanIntegration.js
+```
+
+Use it as a reviewable starting point for backend integration, not as a blind copy-paste replacement for the team's production code.
+
+Recommended environment variable for the Express backend:
+
+```text
+ML_API_BASE_URL=http://127.0.0.1:8000
+```
+
+If Express runs inside Docker while the ML API runs on the host laptop, use:
+
+```text
+ML_API_BASE_URL=http://host.docker.internal:8000
+```
+
+If both services run in the same Docker Compose network, use the ML service name, for example:
+
+```text
+ML_API_BASE_URL=http://ml-api:8000
+```
+
+Important score mapping warning:
+
+```text
+prob_default higher = higher default risk
+```
+
+If an admin UI still needs a 0-100 display score where higher means more eligible, derive it explicitly:
+
+```text
+eligibility_score = round((1 - prob_default) * 100)
+```
+
+Do not store `prob_default * 100` as `ai_score`, because that reverses the meaning.
+
 ## 4. Frontend and Mobile Responsibility
 
 Frontend and mobile apps should:
@@ -243,6 +291,7 @@ Before FE/BE/mobile teams use a new API version:
 - Postman collection is updated;
 - API contract is updated;
 - model card is updated;
+- backend adapter example is reviewed when Express integration changes;
 - request fields are confirmed with backend/frontend/mobile;
 - error behavior is tested;
 - human-review wording is preserved.

@@ -63,6 +63,9 @@ The current role focus is ML Ops and ML integration:
 - Added GitHub Actions CI for dependency validation, compile checks, and the full test suite on push and pull request.
 - Added a reviewer quickstart guide so teammates, mentors, or portfolio reviewers can understand what is ready, what still needs the model artifact, and what is not deployed yet.
 - Added CI asset tests so the workflow and reviewer runbook remain documented and testable.
+- Added Express backend adapter examples for team handoff, including an ML API client, loan AI payload/response mapper, and example loan scoring integration function.
+- Documented the score direction mismatch between the admin repository's `ai_score` concept and the ML API's `prob_default` output.
+- Added tests that keep the backend adapter examples present and aligned with the integration contract.
 
 ### Key Technical Decision
 
@@ -103,8 +106,11 @@ Docker support mounts `./models` into the container as read-only instead of copy
 
 GitHub Actions CI was added after local and Docker execution were stable. CI does not require `models/best_model.pkl`; the automated tests intentionally cover missing-model behavior and dummy artifact scenarios so the repository stays testable from a clean clone.
 
+The Express backend adapter examples were added after auditing the admin repository integration gap. The admin repository already has a loan review flow and an `ai_score` concept, but the ML API returns `prob_default`, where a higher value means higher default risk. The example adapter therefore documents the safer storage approach: keep the full ML response and derive `eligibility_score = round((1 - prob_default) * 100)` only when a UI needs a score where higher means more eligible.
+
 ### Next Steps
 
+- Coordinate with the backend team before applying the Express adapter example into the admin/backend repository.
 - Decide whether the next demo target is local-only, Docker-based, or public URL deployment.
 - If public deployment is needed, choose hosting and model artifact delivery strategy before exposing `/predict`.
 - Update API/request examples when the retrained model contract changes.

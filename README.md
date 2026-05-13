@@ -46,6 +46,7 @@ Main responsibilities in this repository:
 - human-in-the-loop response design is implemented for prediction output
 - Docker support is available for reproducible local API serving
 - GitHub Actions CI is available for automated test checks on push and pull request
+- Express backend adapter examples are available for backend team integration handoff
 
 ## Current Model Direction
 
@@ -94,6 +95,8 @@ The model artifact itself is not committed to this repository because model file
 │   ├── prediction_usage_examples.md
 │   ├── reviewer_quickstart.md
 │   └── team_integration_contract.md
+├── examples/
+│   └── express_backend_adapter/
 ├── models/
 ├── postman/
 ├── references/
@@ -349,6 +352,7 @@ Prediction endpoint error handling:
 - [Prediction Usage Examples](docs/prediction_usage_examples.md)
 - [Reviewer Quickstart](docs/reviewer_quickstart.md)
 - [Team Integration Contract](docs/team_integration_contract.md)
+- [Express Backend Adapter Example](examples/express_backend_adapter/README.md)
 - [Docker Usage](docs/docker_usage.md)
 - [Development Log](docs/development_log.md)
 - [Data Notes](data/README.md)
