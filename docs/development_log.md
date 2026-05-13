@@ -53,6 +53,9 @@ The current role focus is ML Ops and ML integration:
 - Added endpoint-level error handling for missing artifact, invalid artifact, and prediction runtime failure.
 - Added endpoint tests for successful prediction, missing model, invalid model, failed inference, and invalid request validation.
 - Verified `POST /predict` through a local HTTP request using the real `best_model.pkl` artifact.
+- Added prediction usage examples with PowerShell, curl, expected response, validation error examples, and model artifact error examples.
+- Added a Postman collection for root, health, model-info, prediction, and invalid-request validation flows.
+- Added documentation asset tests to make sure the Postman collection stays valid JSON and continues documenting the core endpoints.
 
 ### Key Technical Decision
 
@@ -85,9 +88,11 @@ The prediction endpoint is now a thin HTTP wrapper around the service layer. Fas
 
 After the progress 01-10 review, the binary `predict_proba(...)` validation was tightened so the service only accepts exactly two probability columns: class 0 and class 1. This prevents a future multiclass artifact from being interpreted incorrectly as a binary default-risk model.
 
+Prediction usage examples and the Postman collection were added after the endpoint was implemented so the examples match the real API behavior instead of documenting a planned contract too early.
+
 ### Next Steps
 
-- Add Postman collection or example request assets.
-- Add more integration documentation for backend/mobile teams.
-- Test the API locally.
+- Add Dockerfile for reproducible local serving.
+- Add GitHub Actions for automated tests on push.
+- Add more integration documentation for backend/mobile teams if the frontend/backend contract changes.
 - Push implementation in small, explainable commits.

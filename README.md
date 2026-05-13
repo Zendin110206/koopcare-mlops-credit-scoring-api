@@ -4,7 +4,7 @@ FastAPI-based machine learning inference service for KoopCare, an AI-assisted cr
 
 ## Project Status
 
-This repository is currently in the initial MLOps/API implementation phase.
+This repository is currently in the prototype MLOps/API implementation phase.
 
 The current API includes working health, model metadata, and prediction endpoints. The prediction endpoint loads the local model artifact, applies the saved preprocessor, runs XGBoost probability inference, and returns a human-in-the-loop decision-support response.
 
@@ -81,7 +81,8 @@ The model artifact itself is not committed to this repository because model file
 ├── docs/
 │   ├── api_contract.md
 │   ├── development_log.md
-│   └── model_card.md
+│   ├── model_card.md
+│   └── prediction_usage_examples.md
 ├── models/
 ├── postman/
 ├── references/
@@ -141,6 +142,12 @@ Open FastAPI documentation:
 
 ```text
 http://127.0.0.1:8000/docs
+```
+
+Open prediction usage examples:
+
+```text
+docs/prediction_usage_examples.md
 ```
 
 Run tests:
@@ -295,7 +302,8 @@ PredictionRequest
   "model_name": "XGBoost",
   "model_version": "koopcare-xgboost-v1",
   "human_review_required": true,
-  "final_decision": null
+  "final_decision": null,
+  "note": "AI recommendation only. Final financing decision must be reviewed and approved by cooperative officers."
 }
 ```
 
@@ -310,9 +318,11 @@ Prediction endpoint error handling:
 
 - [API Contract](docs/api_contract.md)
 - [Model Card](docs/model_card.md)
+- [Prediction Usage Examples](docs/prediction_usage_examples.md)
 - [Development Log](docs/development_log.md)
 - [Data Notes](data/README.md)
 - [Model Artifact Notes](models/README.md)
+- [Postman Collection Notes](postman/README.md)
 
 ## Important Limitation
 

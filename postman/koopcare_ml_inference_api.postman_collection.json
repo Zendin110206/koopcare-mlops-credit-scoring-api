@@ -1,0 +1,144 @@
+{
+  "info": {
+    "_postman_id": "f3f1fb42-3ce5-4a03-b048-02555fb0b94c",
+    "name": "KoopCare ML Inference API",
+    "description": "Local API requests for KoopCare credit scoring decision-support inference.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Root Navigation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ]
+            },
+            "description": "Returns basic service navigation URLs."
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Checks whether the API service is running and whether the configured model path exists."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Model",
+      "item": [
+        {
+          "name": "Model Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/model-info",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "model-info"
+              ]
+            },
+            "description": "Returns configured model metadata and validated local artifact status."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Prediction",
+      "item": [
+        {
+          "name": "Predict Credit Risk - Example Applicant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code_gender\": \"M\",\n  \"name_income_type\": \"Working\",\n  \"name_education_type\": \"Secondary / secondary special\",\n  \"name_family_status\": \"Married\",\n  \"occupation_type\": \"Laborers\",\n  \"flag_own_car\": \"N\",\n  \"flag_own_realty\": \"Y\",\n  \"cnt_children\": 0,\n  \"cnt_fam_members\": 2.0,\n  \"amt_income_total\": 135000.0,\n  \"amt_credit\": 568800.0,\n  \"amt_annuity\": 20560.5,\n  \"amt_goods_price\": 450000.0,\n  \"days_birth\": -19241,\n  \"days_employed\": -2329.0,\n  \"days_last_phone_change\": -1740.0,\n  \"ext_source_1\": 0.5,\n  \"ext_source_2\": 0.6,\n  \"ext_source_3\": 0.4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/predict",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "predict"
+              ]
+            },
+            "description": "Runs the documented prediction example. Requires models/best_model.pkl to be available locally."
+          }
+        },
+        {
+          "name": "Predict Credit Risk - Invalid Ownership Flag",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code_gender\": \"M\",\n  \"name_income_type\": \"Working\",\n  \"name_education_type\": \"Secondary / secondary special\",\n  \"name_family_status\": \"Married\",\n  \"occupation_type\": \"Laborers\",\n  \"flag_own_car\": \"INVALID\",\n  \"flag_own_realty\": \"Y\",\n  \"cnt_children\": 0,\n  \"cnt_fam_members\": 2.0,\n  \"amt_income_total\": 135000.0,\n  \"amt_credit\": 568800.0,\n  \"amt_annuity\": 20560.5,\n  \"amt_goods_price\": 450000.0,\n  \"days_birth\": -19241,\n  \"days_employed\": -2329.0,\n  \"days_last_phone_change\": -1740.0,\n  \"ext_source_1\": 0.5,\n  \"ext_source_2\": 0.6,\n  \"ext_source_3\": 0.4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/predict",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "predict"
+              ]
+            },
+            "description": "Demonstrates FastAPI/Pydantic request validation. Expected HTTP status: 422."
+          }
+        }
+      ]
+    }
+  ]
+}

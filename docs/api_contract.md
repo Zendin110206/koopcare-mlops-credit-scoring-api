@@ -120,6 +120,12 @@ Status: implemented.
 
 Runs credit risk prediction and returns AI decision-support output for cooperative officer review.
 
+For copy-paste local usage examples, see:
+
+```text
+docs/prediction_usage_examples.md
+```
+
 Internal service flow:
 
 ```text
