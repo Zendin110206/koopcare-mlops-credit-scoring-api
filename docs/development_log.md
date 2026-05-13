@@ -60,6 +60,9 @@ The current role focus is ML Ops and ML integration:
 - Added a team integration contract for backend, frontend, and mobile teams using the prediction API safely.
 - Added Docker support for reproducible local API serving without baking `best_model.pkl` into the image.
 - Added Docker asset tests for Dockerfile, `.dockerignore`, Compose model volume behavior, and Docker usage documentation.
+- Added GitHub Actions CI for dependency validation, compile checks, and the full test suite on push and pull request.
+- Added a reviewer quickstart guide so teammates, mentors, or portfolio reviewers can understand what is ready, what still needs the model artifact, and what is not deployed yet.
+- Added CI asset tests so the workflow and reviewer runbook remain documented and testable.
 
 ### Key Technical Decision
 
@@ -98,8 +101,11 @@ The model handoff and team integration contracts were added because the ML model
 
 Docker support mounts `./models` into the container as read-only instead of copying the model artifact into the image. This keeps the source image clean while still allowing FE/BE/mobile teams to run the local API when `models/best_model.pkl` is available.
 
+GitHub Actions CI was added after local and Docker execution were stable. CI does not require `models/best_model.pkl`; the automated tests intentionally cover missing-model behavior and dummy artifact scenarios so the repository stays testable from a clean clone.
+
 ### Next Steps
 
-- Add GitHub Actions for automated tests on push.
+- Decide whether the next demo target is local-only, Docker-based, or public URL deployment.
+- If public deployment is needed, choose hosting and model artifact delivery strategy before exposing `/predict`.
 - Update API/request examples when the retrained model contract changes.
 - Push implementation in small, explainable commits.

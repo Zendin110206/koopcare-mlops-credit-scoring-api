@@ -1,5 +1,7 @@
 # KoopCare MLOps Credit Scoring API
 
+[![CI](https://github.com/Zendin110206/koopcare-mlops-credit-scoring-api/actions/workflows/ci.yml/badge.svg)](https://github.com/Zendin110206/koopcare-mlops-credit-scoring-api/actions/workflows/ci.yml)
+
 FastAPI-based machine learning inference service for KoopCare, an AI-assisted credit scoring decision-support system for BMT/cooperative financing workflows.
 
 ## Project Status
@@ -43,6 +45,7 @@ Main responsibilities in this repository:
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
 - human-in-the-loop response design is implemented for prediction output
 - Docker support is available for reproducible local API serving
+- GitHub Actions CI is available for automated test checks on push and pull request
 
 ## Current Model Direction
 
@@ -78,6 +81,9 @@ The model artifact itself is not committed to this repository because model file
 
 ```text
 .
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── data/
 ├── docs/
 │   ├── api_contract.md
@@ -86,6 +92,7 @@ The model artifact itself is not committed to this repository because model file
 │   ├── model_handoff_contract.md
 │   ├── model_card.md
 │   ├── prediction_usage_examples.md
+│   ├── reviewer_quickstart.md
 │   └── team_integration_contract.md
 ├── models/
 ├── postman/
@@ -162,6 +169,12 @@ Open prediction usage examples:
 
 ```text
 docs/prediction_usage_examples.md
+```
+
+Open reviewer quickstart:
+
+```text
+docs/reviewer_quickstart.md
 ```
 
 Run tests:
@@ -334,6 +347,7 @@ Prediction endpoint error handling:
 - [Model Card](docs/model_card.md)
 - [Model Handoff Contract](docs/model_handoff_contract.md)
 - [Prediction Usage Examples](docs/prediction_usage_examples.md)
+- [Reviewer Quickstart](docs/reviewer_quickstart.md)
 - [Team Integration Contract](docs/team_integration_contract.md)
 - [Docker Usage](docs/docker_usage.md)
 - [Development Log](docs/development_log.md)

@@ -95,6 +95,12 @@ Use the request payload from:
 docs/prediction_usage_examples.md
 ```
 
+For a broader reviewer-oriented run guide, see:
+
+```text
+docs/reviewer_quickstart.md
+```
+
 ## 5. Expected Model Status
 
 If `models/best_model.pkl` exists and is compatible, `/model-info` should return:
