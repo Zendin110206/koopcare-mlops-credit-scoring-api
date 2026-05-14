@@ -22,11 +22,26 @@ Base URL for local development:
 http://127.0.0.1:8000
 ```
 
-The endpoint used by product clients is:
+The endpoint used by the backend integration layer for ML scoring is:
 
 ```text
 POST /predict
 ```
+
+More precisely, `POST /predict` is the ML scoring endpoint used by the
+backend integration layer.
+
+For the main KoopCare product flow, frontend and mobile clients should call the
+Express backend, not this FastAPI ML API directly:
+
+```text
+Flutter mobile / React admin
+-> Express backend
+-> FastAPI ML API
+```
+
+This keeps authentication, validation, database writes, audit history, and
+final officer review inside the product backend.
 
 ## 2. Recommended Client Flow
 

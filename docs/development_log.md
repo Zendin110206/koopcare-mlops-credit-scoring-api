@@ -67,6 +67,9 @@ The current role focus is ML Ops and ML integration:
 - Documented the score direction mismatch between the admin repository's `ai_score` concept and the ML API's `prob_default` output.
 - Added tests that keep the backend adapter examples present and aligned with the integration contract.
 - Updated GitHub Actions workflow actions to Node 24-compatible major versions after GitHub CI reported Node 20 action runtime deprecation warnings.
+- Re-audited the team integration direction after the team confirmed the current phase will continue with Express backend and MySQL instead of Supabase.
+- Clarified that mobile/admin product clients should call the Express backend, while the Express backend calls the FastAPI ML API.
+- Added public reference links for the MLOps API, model artifact source, admin web/backend repository, and mobile app repository.
 
 ### Key Technical Decision
 
@@ -111,10 +114,26 @@ The Express backend adapter examples were added after auditing the admin reposit
 
 The CI workflow was updated from `actions/checkout@v4` and `actions/setup-python@v5` to Node 24-compatible major versions after GitHub Actions reported runtime deprecation warnings. This keeps the portfolio CI healthier for future reviewer runs.
 
+The team integration audit after Progress 17 confirmed that the current
+product architecture should remain:
+
+```text
+Flutter mobile / React admin
+-> Express backend
+-> MySQL and FastAPI ML API
+```
+
+For the current phase, the team is not migrating to Supabase and the model is
+not being retrained in the near term. The current XGBoost artifact remains the
+integration contract for now, while future model replacement remains covered by
+the model handoff contract.
+
 ### Next Steps
 
 - Coordinate with the backend team before applying the Express adapter example into the admin/backend repository.
-- Decide whether the next demo target is local-only, Docker-based, or public URL deployment.
+- Start with a small backend Pull Request in `sayafauzi/koopcare-admin` for an ML API client and safe score mapping.
+- Keep mobile/admin clients pointed at the Express backend, not directly at the ML API.
+- Decide whether the next demo target is local-only, Docker-based, or public URL deployment after backend-to-ML integration works locally.
 - If public deployment is needed, choose hosting and model artifact delivery strategy before exposing `/predict`.
 - Update API/request examples when the retrained model contract changes.
 - Push implementation in small, explainable commits.
