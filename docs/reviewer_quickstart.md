@@ -287,6 +287,7 @@ Deployment config:
 Dockerfile
 railway.toml
 docs/public_deployment.md
+docs/railway_variables.md
 ```
 
 Recommended public flow:

@@ -57,6 +57,30 @@ def test_public_deployment_guide_exists() -> None:
     assert "railway.toml" in guide
     assert "models/best_model.pkl" in guide
     assert "ML_API_BASE_URL" in guide
+    assert "docs/railway_variables.md" in guide
+
+
+def test_railway_variables_guide_documents_safe_production_values() -> None:
+    guide = Path("docs/railway_variables.md").read_text(encoding="utf-8")
+
+    assert "APP_ENV=production" in guide
+    assert "APP_DEBUG=false" in guide
+    assert "MODEL_PATH=models/best_model.pkl" in guide
+    assert "Do not add these" in guide
+    assert "API_HOST" in guide
+    assert "API_PORT" in guide
+    assert "PORT" in guide
+
+
+def test_public_checkpoint_document_exists() -> None:
+    guide = Path("docs/checkpoints/public_ml_api_deployment_checkpoint.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "Public ML API Deployment Readiness" in guide
+    assert "models/best_model.pkl" in guide
+    assert "railway.toml" in guide
+    assert "docs/railway_variables.md" in guide
 
 
 def test_model_handoff_contract_documents_retraining_risks() -> None:

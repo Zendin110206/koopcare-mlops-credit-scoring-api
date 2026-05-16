@@ -83,15 +83,28 @@ railway.toml
 Dockerfile
 ```
 
-Set these variables if Railway does not already infer them:
+Railway may show suggested variables from `.env.example`. That is normal, but
+do not import every suggested local value as-is.
+
+Set these variables:
 
 ```text
 APP_ENV=production
+APP_DEBUG=false
 MODEL_PATH=models/best_model.pkl
 MODEL_NAME=XGBoost
 MODEL_VERSION=koopcare-xgboost-v1
 MODEL_THRESHOLD=0.6660796
 MODEL_FEATURES_COUNT=25
+```
+
+Do not add these from the suggested list unless Railway logs specifically ask
+for them:
+
+```text
+API_HOST
+API_PORT
+PORT
 ```
 
 Do not manually set `PORT` unless Railway support or logs specifically ask for
@@ -101,6 +114,12 @@ it. Railway injects `PORT`, and the Docker command now uses:
 PORT first
 API_PORT second
 8000 fallback
+```
+
+For the full variable explanation, see:
+
+```text
+docs/railway_variables.md
 ```
 
 ## Public URL Checks
