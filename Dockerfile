@@ -17,6 +17,7 @@ RUN python -m pip install --upgrade pip \
 
 COPY src ./src
 COPY models/README.md ./models/README.md
+COPY models/best_model.pkl ./models/best_model.pkl
 COPY .env.example ./.env.example
 
 RUN useradd --create-home --shell /usr/sbin/nologin appuser \
@@ -27,6 +28,6 @@ USER appuser
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"
+    CMD python -c "import os, urllib.request; port = os.getenv('PORT') or os.getenv('API_PORT') or '8000'; urllib.request.urlopen(f'http://127.0.0.1:{port}/health', timeout=3)"
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-${API_PORT:-8000}}"]

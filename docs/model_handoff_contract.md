@@ -13,13 +13,16 @@ Use this document when:
 
 ## 1. Current Runtime Artifact
 
-The current API expects a local model artifact:
+The current API expects this model artifact:
 
 ```text
 models/best_model.pkl
 ```
 
-The artifact is ignored by git and must be prepared locally.
+For the approved public portfolio deployment checkpoint, this artifact is
+committed and copied into the production Docker image. Earlier local-only
+checkpoints kept it outside Git. Any future replacement still requires explicit
+handoff review.
 
 Current inspected artifact:
 

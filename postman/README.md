@@ -29,10 +29,11 @@ Start the local API:
 uvicorn src.main:app --reload
 ```
 
-For `POST /predict`, ensure the local model artifact exists:
+For `POST /predict`, ensure the model artifact exists:
 
 ```text
 models/best_model.pkl
 ```
 
-The model artifact is ignored by git and must be prepared locally.
+For the approved public portfolio checkpoint, this artifact is committed in the
+repository so local, Docker, and public demos can run real inference.

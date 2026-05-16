@@ -8,8 +8,10 @@ def test_dockerfile_uses_runtime_safe_api_settings() -> None:
     assert "libgomp1" in dockerfile
     assert "COPY requirements.txt" in dockerfile
     assert "COPY src ./src" in dockerfile
+    assert "COPY models/best_model.pkl ./models/best_model.pkl" in dockerfile
     assert "uvicorn" in dockerfile
     assert "0.0.0.0" in dockerfile
+    assert "${PORT:-${API_PORT:-8000}}" in dockerfile
     assert "8000" in dockerfile
 
 
@@ -21,7 +23,17 @@ def test_dockerignore_excludes_private_and_large_local_files() -> None:
     assert "local_context/" in dockerignore
     assert "models/*" in dockerignore
     assert "!models/README.md" in dockerignore
+    assert "!models/best_model.pkl" in dockerignore
     assert "data/*" in dockerignore
+
+
+def test_railway_config_uses_dockerfile_and_healthcheck() -> None:
+    railway_config = Path("railway.toml").read_text(encoding="utf-8")
+
+    assert 'builder = "DOCKERFILE"' in railway_config
+    assert 'dockerfilePath = "Dockerfile"' in railway_config
+    assert 'healthcheckPath = "/health"' in railway_config
+    assert "healthcheckTimeout = 300" in railway_config
 
 
 def test_docker_compose_mounts_model_artifacts_read_only() -> None:
@@ -40,4 +52,5 @@ def test_docker_usage_guide_documents_model_volume_rule() -> None:
     assert "docker compose up --build" in guide
     assert "models/best_model.pkl" in guide
     assert "./models:/app/models:ro" in guide
+    assert "Railway" in guide
     assert "/model-info" in guide

@@ -38,7 +38,13 @@ Copy the environment template:
 Copy-Item .env.example .env
 ```
 
-Download the local model artifact when you want `/predict` to run real inference:
+The approved prototype artifact is already included at:
+
+```text
+models/best_model.pkl
+```
+
+If the team asks you to refresh it from the original EDA repository, use:
 
 ```powershell
 Invoke-WebRequest `
@@ -46,7 +52,8 @@ Invoke-WebRequest `
   -OutFile ".\models\best_model.pkl"
 ```
 
-The model artifact stays local and is ignored by git.
+Do not silently replace the committed artifact. A changed artifact must follow
+`docs/model_handoff_contract.md` before it is committed or deployed.
 
 ## 2. Start the API
 

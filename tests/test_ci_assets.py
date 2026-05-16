@@ -32,5 +32,6 @@ def test_reviewer_quickstart_documents_demo_paths() -> None:
     assert "Docker" in guide
     assert "Public URL Deployment" in guide
     assert "models/best_model.pkl" in guide
+    assert "railway.toml" in guide
     assert "POST /predict" in guide
     assert "AI recommendation" in guide

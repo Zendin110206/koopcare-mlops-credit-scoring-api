@@ -23,6 +23,7 @@ data/*
 models/*
 !models/.gitkeep
 !models/README.md
+!models/best_model.pkl
 
 # Generated outputs
 outputs/

@@ -1,6 +1,7 @@
 # KoopCare Reviewer Quickstart
 
-This document helps reviewers, teammates, mentors, or portfolio readers understand what is already usable and how to run the KoopCare ML inference API.
+This document helps reviewers, teammates, mentors, or portfolio readers
+understand what is already usable and how to run the KoopCare ML inference API.
 
 ## 1. Current Readiness Status
 
@@ -11,11 +12,22 @@ The repository is ready for:
 - frontend/mobile integration planning;
 - reviewer demo from source code;
 - reviewer demo with Docker;
+- public API deployment using the included Dockerfile and `railway.toml`;
 - portfolio review of the MLOps implementation.
 
-The repository is not yet a production deployment.
+The repository is still a prototype decision-support service, not a real
+production credit approval system.
 
-It does not currently provide a permanent public API URL.
+For the approved public portfolio checkpoint, the repository now includes the
+current prototype artifact:
+
+```text
+models/best_model.pkl
+```
+
+Earlier local-only checkpoints kept this file outside Git. The team has now
+allowed the artifact to be included so the public Docker deployment can run
+`/predict` without manual file upload.
 
 ## 2. What Is Already Implemented
 
@@ -31,7 +43,7 @@ GET /docs
 
 Implemented MLOps behavior:
 
-- loads the local `models/best_model.pkl` artifact when available;
+- loads `models/best_model.pkl`;
 - validates artifact keys and runtime components;
 - validates exact model feature order;
 - applies saved preprocessing before prediction;
@@ -39,7 +51,7 @@ Implemented MLOps behavior:
 - applies the model threshold;
 - returns `LAYAK` or `TIDAK_LAYAK`;
 - preserves human-in-the-loop decision wording;
-- returns clear errors when model artifact is missing or invalid.
+- returns clear errors when the model artifact is missing or invalid.
 
 Implemented support assets:
 
@@ -50,11 +62,14 @@ Implemented support assets:
 - model handoff contract;
 - team integration contract;
 - Docker support;
+- Railway deployment config;
 - automated test workflow through GitHub Actions.
 
-## 3. What Reviewers Can Check Without the Model Artifact
+## 3. What Reviewers Can Check From a Clean Clone
 
-Reviewers can still inspect and run many parts without `models/best_model.pkl`.
+Because the approved artifact is now committed, a reviewer can clone the
+repository and run the full local or Docker demo immediately after installing
+dependencies.
 
 They can:
 
@@ -64,40 +79,54 @@ They can:
 - open `/health`;
 - open `/model-info`;
 - open `/docs`;
+- run `/predict`;
 - review API schemas;
 - review documentation;
 - review Postman collection;
-- review Docker setup.
+- review Docker and Railway setup.
 
-Expected behavior without the artifact:
+Expected healthy runtime behavior:
 
 ```text
 GET /health works
-GET /model-info reports missing artifact
-POST /predict returns HTTP 503 model_artifact_missing
+GET /model-info reports artifact_status = available
+POST /predict returns a decision-support recommendation
 ```
 
-This is intentional.
+The API still keeps missing-artifact and invalid-artifact error handling because
+future model replacement, bad deploys, or local file deletion must fail clearly.
 
-The model artifact is not committed to GitHub.
+## 4. Model Artifact Source and Safety
 
-## 4. What Reviewers Need for Full Prediction Demo
+The current prototype model originally comes from:
 
-For full prediction demo, reviewers need:
+```text
+https://github.com/AdityaNugrahaPS/KoopCare-EDA
+```
+
+Current artifact path:
 
 ```text
 models/best_model.pkl
 ```
 
-Download command:
+Runtime identity:
 
-```powershell
-Invoke-WebRequest `
-  -Uri "https://raw.githubusercontent.com/AdityaNugrahaPS/KoopCare-EDA/main/best_model.pkl" `
-  -OutFile ".\models\best_model.pkl"
+```text
+model_name: XGBoost
+model_version: koopcare-xgboost-v1
+threshold: 0.6660796
+required_features: 25
 ```
 
-The file remains local and ignored by git.
+Only use trusted KoopCare/team artifacts. Python pickle/joblib files can execute
+code while loading, so do not replace this file with an unknown artifact.
+
+Do not silently replace `models/best_model.pkl`. If the model changes, follow:
+
+```text
+docs/model_handoff_contract.md
+```
 
 ## 5. Run Locally with Python
 
@@ -134,13 +163,15 @@ http://127.0.0.1:8000/model-info
 http://127.0.0.1:8000/docs
 ```
 
-## 6. Run with Docker
-
-Prepare the model artifact if full prediction is needed:
+If `/model-info` is healthy, it should show:
 
 ```text
-models/best_model.pkl
+artifact_status = available
+metadata_source = artifact
+model_loaded = true
 ```
+
+## 6. Run with Docker
 
 Run:
 
@@ -162,13 +193,15 @@ Stop:
 docker compose down
 ```
 
-Docker mounts:
+Docker Compose still mounts:
 
 ```text
 ./models:/app/models:ro
 ```
 
-The Docker image does not include `best_model.pkl`.
+This lets developers test a deliberate local artifact replacement. The
+production Docker image also includes `models/best_model.pkl`, so a public
+platform such as Railway can run without a manual volume.
 
 ## 7. Run Prediction
 
@@ -241,56 +274,55 @@ The workflow checks:
 - Python compile check;
 - full `pytest` suite.
 
-This gives reviewers a visible signal that the repository is maintained and testable.
+This gives reviewers a visible signal that the repository is maintained and
+testable.
 
-## 9. Public Demo Options
+## 9. Public URL Deployment
 
-There are three practical demo levels.
+Public deployment is now prepared in this repository.
 
-### Option A - Local Demo
-
-Use this when the reviewer is technical and can run Python.
-
-Status:
+Deployment config:
 
 ```text
-ready now
+Dockerfile
+railway.toml
+docs/public_deployment.md
 ```
 
-### Option B - Docker Demo
-
-Use this when the reviewer has Docker installed and wants a more consistent runtime.
-
-Status:
+Recommended public flow:
 
 ```text
-ready now
+Railway public FastAPI URL
+-> /health
+-> /model-info
+-> /predict
 ```
 
-### Option C - Public URL Deployment
+After Railway gives a public URL, verify from project 14:
 
-Use this when mobile/web teammates need a shared URL and cannot run the API locally.
+```powershell
+npm run verify:ml-api -- https://your-ml-api-url
+```
 
-Status:
+Then connect project 14 by setting:
 
 ```text
-not done yet
+ML_API_BASE_URL=https://your-ml-api-url
+ML_SCORING_MODE=optional_fallback
 ```
 
-Before public deployment, decide:
+After project 14 redeploys, verify the full public path:
 
-- where the API will be hosted;
-- how the model artifact will be provided;
-- whether the endpoint should require authentication;
-- whether the API should be reachable publicly or only by backend services;
-- how to avoid exposing a decision-support model as an automatic approval system.
+```powershell
+npm run verify:public -- https://koopcare-fullstack-demo-platform-production.up.railway.app/ --write-test --expect-ml-api
+```
 
 ## 10. Recommended Message for Reviewers
 
 ```text
 This repository contains the KoopCare ML inference API for credit scoring decision support.
 
-It is ready for local and Docker-based testing. The API exposes /health, /model-info, and /predict. The model artifact is not committed to GitHub, so full prediction requires placing best_model.pkl inside the models/ folder.
+It is ready for local, Docker, and public API deployment testing. The API exposes /health, /model-info, and /predict. The approved prototype model artifact is included at models/best_model.pkl so a Docker-based public deployment can run real inference.
 
 The API output is only an AI recommendation. Final financing decisions must remain under cooperative officer review.
 ```
@@ -299,4 +331,5 @@ The API output is only an AI recommendation. Final financing decisions must rema
 
 The current model is a prototype trained on Home Credit style data.
 
-For real BMT production deployment, the model should be retrained with cooperative-native data and reviewed again with the model handoff contract.
+For real BMT production deployment, the model should be retrained with
+cooperative-native data and reviewed again with the model handoff contract.

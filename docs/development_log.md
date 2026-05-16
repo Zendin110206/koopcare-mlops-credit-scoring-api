@@ -58,7 +58,7 @@ The current role focus is ML Ops and ML integration:
 - Added documentation asset tests to make sure the Postman collection stays valid JSON and continues documenting the core endpoints.
 - Added a model handoff contract for retrained artifacts, dependency compatibility, feature order, threshold, and `EXT_SOURCE` migration.
 - Added a team integration contract for backend, frontend, and mobile teams using the prediction API safely.
-- Added Docker support for reproducible local API serving without baking `best_model.pkl` into the image.
+- Added Docker support for reproducible local API serving. The first Docker checkpoint kept `best_model.pkl` outside the image, and the later approved public deployment checkpoint copies the trusted artifact into the production image.
 - Added Docker asset tests for Dockerfile, `.dockerignore`, Compose model volume behavior, and Docker usage documentation.
 - Added GitHub Actions CI for dependency validation, compile checks, and the full test suite on push and pull request.
 - Added a reviewer quickstart guide so teammates, mentors, or portfolio reviewers can understand what is ready, what still needs the model artifact, and what is not deployed yet.
@@ -106,7 +106,7 @@ Prediction usage examples and the Postman collection were added after the endpoi
 
 The model handoff and team integration contracts were added because the ML model may be retrained. A retrained model can affect artifact structure, feature order, request fields, frontend/mobile forms, backend payload mapping, and documentation. Model replacement must therefore be deliberate, validated, and coordinated.
 
-Docker support mounts `./models` into the container as read-only instead of copying the model artifact into the image. This keeps the source image clean while still allowing FE/BE/mobile teams to run the local API when `models/best_model.pkl` is available.
+Docker support mounts `./models` into the Compose container as read-only for deliberate local artifact replacement/testing. For the approved public portfolio checkpoint, the production Docker image now also copies `models/best_model.pkl` so a public platform can run `/predict` without a manual volume or upload step.
 
 GitHub Actions CI was added after local and Docker execution were stable. CI does not require `models/best_model.pkl`; the automated tests intentionally cover missing-model behavior and dummy artifact scenarios so the repository stays testable from a clean clone.
 
@@ -133,7 +133,57 @@ the model handoff contract.
 - Coordinate with the backend team before applying the Express adapter example into the admin/backend repository.
 - Start with a small backend Pull Request in `sayafauzi/koopcare-admin` for an ML API client and safe score mapping.
 - Keep mobile/admin clients pointed at the Express backend, not directly at the ML API.
-- Decide whether the next demo target is local-only, Docker-based, or public URL deployment after backend-to-ML integration works locally.
-- If public deployment is needed, choose hosting and model artifact delivery strategy before exposing `/predict`.
+- Deploy the FastAPI ML API using the Dockerfile and `railway.toml`.
+- Connect the fullstack demo service by setting `ML_API_BASE_URL` to the public ML API URL.
+- Verify the public end-to-end flow with project 14 verification scripts.
 - Update API/request examples when the retrained model contract changes.
 - Push implementation in small, explainable commits.
+
+## 2026-05-16
+
+### Goal
+
+Prepare the ML inference API for a real public demo path instead of a local-only
+or fallback-only demo.
+
+### Work Completed
+
+- Confirmed the team allows the current prototype model artifact to be deployed
+  for the public portfolio checkpoint.
+- Updated `.gitignore` and `.dockerignore` so `models/best_model.pkl` remains
+  the only model artifact intentionally included.
+- Updated the Dockerfile so the production image copies
+  `models/best_model.pkl`.
+- Updated the Docker command and health check to respect platform-injected
+  `PORT` first, then `API_PORT`, then `8000`.
+- Added `railway.toml` so Railway can deploy the FastAPI service through the
+  Dockerfile with `/health` as the deployment health check.
+- Added `docs/public_deployment.md` as the beginner-safe public deployment
+  handoff guide.
+- Updated reviewer, Docker, model, prediction, Postman, and README guidance so
+  docs no longer contradict the public deployment strategy.
+- Updated asset tests so future edits cannot accidentally remove the public
+  deployment contract.
+
+### Key Decision
+
+The project keeps the old missing-artifact and invalid-artifact safeguards, but
+the approved public image now includes the trusted prototype artifact. This gives
+the public demo a real trained-model path while still preserving clear error
+handling for bad future replacements.
+
+### Next Steps
+
+- Deploy this repository as a Railway service.
+- Copy the public ML API URL from Railway.
+- Set project 14 `ML_API_BASE_URL` to that public ML API URL.
+- Redeploy project 14.
+- Verify the public chain:
+
+```text
+browser/user
+-> project 14 public fullstack service
+-> project 14 Express backend
+-> project 13 public FastAPI ML API
+-> models/best_model.pkl
+```

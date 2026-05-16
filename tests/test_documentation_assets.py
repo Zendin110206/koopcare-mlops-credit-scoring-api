@@ -50,6 +50,15 @@ def test_prediction_usage_guide_exists() -> None:
     assert "model_artifact_missing" in guide
 
 
+def test_public_deployment_guide_exists() -> None:
+    guide = Path("docs/public_deployment.md").read_text(encoding="utf-8")
+
+    assert "Railway" in guide
+    assert "railway.toml" in guide
+    assert "models/best_model.pkl" in guide
+    assert "ML_API_BASE_URL" in guide
+
+
 def test_model_handoff_contract_documents_retraining_risks() -> None:
     guide = Path("docs/model_handoff_contract.md").read_text(encoding="utf-8")
 

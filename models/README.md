@@ -1,16 +1,20 @@
 # Models Directory
 
-This directory stores local machine learning model artifacts used by the KoopCare ML inference API.
+This directory stores machine learning model artifacts used by the KoopCare ML
+inference API.
 
 ## Expected Artifact
 
-The API expects this local file:
+The API expects this file:
 
 ```text
 models/best_model.pkl
 ```
 
-The model artifact is not committed by default because model files are generated artifacts and may require separate permission from the model owner or project team.
+For the approved public portfolio deployment checkpoint, the current prototype
+artifact is committed at this path. Earlier local-only checkpoints kept model
+files outside Git, but the team has allowed the current artifact to be included
+so Docker/Railway can run `/predict` without manual file upload.
 
 ## Current Prototype Model
 
@@ -67,9 +71,11 @@ pip install -r requirements.txt
 
 If scikit-learn is too new, loading the pickle can fail even when the artifact file itself is correct.
 
-## How to Prepare Locally
+## How to Refresh Locally
 
-Download or copy `best_model.pkl` into this directory:
+The committed artifact is already present. If the team asks you to refresh it
+from the original EDA repository, download or copy `best_model.pkl` into this
+directory:
 
 ```text
 models/best_model.pkl
@@ -83,7 +89,7 @@ Invoke-WebRequest `
   -OutFile ".\models\best_model.pkl"
 ```
 
-After the API implementation is ready, check the loaded model through:
+After replacing the file, check the loaded model through:
 
 ```text
 GET /model-info
@@ -101,11 +107,13 @@ If the ML team provides a retrained artifact, validate it against:
 docs/model_handoff_contract.md
 ```
 
-Do not silently replace `models/best_model.pkl` with a retrained model that changes feature order, request fields, probability class order, or dependency requirements.
+Do not silently replace `models/best_model.pkl` with a retrained model that
+changes feature order, request fields, probability class order, or dependency
+requirements.
 
 ## Docker Note
 
-The Docker image does not include `models/best_model.pkl`.
+The production Docker image includes `models/best_model.pkl`.
 
 When using Docker Compose, the local `models/` directory is mounted into the container as read-only:
 
@@ -113,4 +121,6 @@ When using Docker Compose, the local `models/` directory is mounted into the con
 ./models:/app/models:ro
 ```
 
-This keeps the model artifact local while allowing the containerized API to load it.
+This lets developers deliberately test a local replacement while keeping the
+container read-only at runtime. Any replacement still needs the handoff contract
+review before being committed.

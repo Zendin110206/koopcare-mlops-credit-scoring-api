@@ -64,7 +64,7 @@ threshold: 0.6660796
 required_features: 25
 ```
 
-The model artifact itself is not committed to this repository because model files are generated artifacts and may require permission from the project team.
+The model artifact is now included for the approved public portfolio deployment checkpoint. Earlier local-only checkpoints kept the artifact out of Git, but the public demo needs the Docker image to contain `models/best_model.pkl` so `/predict` can run on Railway without a manual volume upload.
 
 ## Tech Stack
 
@@ -90,6 +90,7 @@ The model artifact itself is not committed to this repository because model file
 │   ├── api_contract.md
 │   ├── development_log.md
 │   ├── docker_usage.md
+│   ├── public_deployment.md
 │   ├── model_handoff_contract.md
 │   ├── model_card.md
 │   ├── prediction_usage_examples.md
@@ -148,7 +149,7 @@ Or run with Docker Compose:
 docker compose up --build
 ```
 
-Docker mounts `./models` into the container as read-only. The image does not include `models/best_model.pkl`.
+Docker Compose still mounts `./models` into the container as read-only for local replacement/testing. The production Docker image also includes `models/best_model.pkl` for the public deployment checkpoint.
 
 Open local health check:
 
@@ -186,7 +187,8 @@ Run tests:
 pytest
 ```
 
-Prepare the local model artifact when you need `/model-info` to validate the runtime model:
+The approved prototype model artifact is already present at `models/best_model.pkl`.
+If the team asks you to refresh it from the original EDA repository, use:
 
 ```powershell
 Invoke-WebRequest `
@@ -194,7 +196,8 @@ Invoke-WebRequest `
   -OutFile ".\models\best_model.pkl"
 ```
 
-The downloaded `.pkl` file stays local and is ignored by git.
+Do not silently replace the committed artifact. A changed artifact must follow
+`docs/model_handoff_contract.md` before it is committed or deployed.
 
 ## Current Endpoint Examples
 
@@ -354,6 +357,7 @@ Prediction endpoint error handling:
 - [Team Integration Contract](docs/team_integration_contract.md)
 - [Express Backend Adapter Example](examples/express_backend_adapter/README.md)
 - [Docker Usage](docs/docker_usage.md)
+- [Public Deployment Guide](docs/public_deployment.md)
 - [Development Log](docs/development_log.md)
 - [Reference Links](references/README.md)
 - [Data Notes](data/README.md)
