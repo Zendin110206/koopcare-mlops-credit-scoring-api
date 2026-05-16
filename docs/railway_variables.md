@@ -107,6 +107,18 @@ Those are created by Railway. Leave them alone.
 
 Redeploy the project 13 service.
 
+If Railway has not created a public URL yet, open:
+
+```text
+Settings -> Networking -> Public Networking -> Generate Domain
+```
+
+Railway should give a URL like:
+
+```text
+https://your-service-name.up.railway.app
+```
+
 Then open:
 
 ```text
