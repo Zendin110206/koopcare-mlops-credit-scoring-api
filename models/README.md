@@ -71,6 +71,11 @@ pip install -r requirements.txt
 
 If scikit-learn is too new, loading the pickle can fail even when the artifact file itself is correct.
 
+Runtime verification also shows an XGBoost warning because the current artifact
+is loaded from a serialized pickle object. It still runs successfully for this
+prototype checkpoint, but the next retrained model should prefer a more stable
+XGBoost model export flow when possible.
+
 ## How to Refresh Locally
 
 The committed artifact is already present. If the team asks you to refresh it

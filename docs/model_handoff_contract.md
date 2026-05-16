@@ -182,6 +182,12 @@ The current artifact failed under a newer scikit-learn version and loaded succes
 scikit-learn==1.6.1
 ```
 
+Current runtime verification also emits an XGBoost serialization warning when
+loading the prototype pickle artifact. This does not block the current public
+demo because `/model-info` and `/predict` still pass, but a future retrained
+model should prefer a stable XGBoost export format and document the matching
+load path.
+
 ## 7. Retrained Model Handoff Checklist
 
 Before a retrained model is accepted into this API, the ML team should provide:
@@ -197,6 +203,7 @@ Before a retrained model is accepted into this API, the ML team should provide:
 - validation metrics;
 - limitations;
 - dependency versions;
+- model serialization/export format;
 - sample input row;
 - expected prediction output for the sample input.
 
