@@ -3,10 +3,12 @@ from pathlib import Path
 import joblib
 import pytest
 
+import src.services.model_service as model_service
 from src.core.config import Settings
 from src.services.model_service import (
     MODEL_FEATURE_COLUMNS,
     ModelArtifactInvalidError,
+    clear_model_artifact_cache,
     get_model_info,
     load_model_artifact,
     load_model_artifact_metadata,
@@ -98,6 +100,33 @@ def test_load_model_artifact_returns_runtime_components(tmp_path: Path) -> None:
     assert loaded_artifact.model_name == "XGBoost"
     assert loaded_artifact.features_count == 25
     assert loaded_artifact.artifact_keys == sorted(artifact.keys())
+
+
+def test_load_model_artifact_caches_valid_artifact(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    model_path = tmp_path / "best_model.pkl"
+    settings = make_settings(model_path)
+    artifact = make_valid_artifact()
+    joblib.dump(artifact, model_path)
+    clear_model_artifact_cache()
+    real_joblib_load = joblib.load
+    load_calls = []
+
+    def counting_joblib_load(path):
+        load_calls.append(path)
+        return real_joblib_load(path)
+
+    monkeypatch.setattr(model_service.joblib, "load", counting_joblib_load)
+
+    first_loaded_artifact = load_model_artifact(settings)
+    second_loaded_artifact = load_model_artifact(settings)
+
+    assert first_loaded_artifact is second_loaded_artifact
+    assert len(load_calls) == 1
+
+    clear_model_artifact_cache()
 
 
 def test_get_model_info_handles_invalid_artifact_without_crashing(

@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 import joblib
@@ -75,6 +77,13 @@ class LoadedModelArtifact:
         return len(self.features)
 
 
+@dataclass(frozen=True)
+class ModelArtifactSignature:
+    path: str
+    modified_ns: int
+    size_bytes: int
+
+
 def get_model_info(settings: Settings) -> ModelInfoResponse:
     if not settings.resolved_model_path.exists():
         return ModelInfoResponse(
@@ -130,19 +139,51 @@ def get_model_info(settings: Settings) -> ModelInfoResponse:
 
 
 def load_model_artifact(settings: Settings) -> LoadedModelArtifact:
-    if not settings.resolved_model_path.exists():
+    model_path = settings.resolved_model_path
+    if not model_path.exists():
         raise ModelArtifactMissingError(
             f"Model artifact not found at {settings.model_path}."
         )
 
+    signature = _build_model_artifact_signature(model_path)
+    return _load_model_artifact_from_cache(
+        signature=signature,
+        configured_model_path=settings.model_path,
+        fallback_model_name=settings.model_name,
+    )
+
+
+def clear_model_artifact_cache() -> None:
+    _load_model_artifact_from_cache.cache_clear()
+
+
+def _build_model_artifact_signature(model_path: Path) -> ModelArtifactSignature:
+    file_stat = model_path.stat()
+
+    return ModelArtifactSignature(
+        path=str(model_path),
+        modified_ns=file_stat.st_mtime_ns,
+        size_bytes=file_stat.st_size,
+    )
+
+
+@lru_cache(maxsize=4)
+def _load_model_artifact_from_cache(
+    signature: ModelArtifactSignature,
+    configured_model_path: str,
+    fallback_model_name: str,
+) -> LoadedModelArtifact:
     try:
-        artifact = joblib.load(settings.resolved_model_path)
+        artifact = joblib.load(signature.path)
     except Exception as exc:
         raise ModelArtifactInvalidError(
-            f"Unable to load model artifact at {settings.model_path}: {exc}"
+            f"Unable to load model artifact at {configured_model_path}: {exc}"
         ) from exc
 
-    return _validate_model_artifact(artifact, settings)
+    return _validate_model_artifact(
+        artifact=artifact,
+        fallback_model_name=fallback_model_name,
+    )
 
 
 def load_model_artifact_metadata(settings: Settings) -> dict[str, Any]:
@@ -182,7 +223,7 @@ def predict_credit_risk(
 
 def _validate_model_artifact(
     artifact: Any,
-    settings: Settings,
+    fallback_model_name: str,
 ) -> LoadedModelArtifact:
     if not isinstance(artifact, dict):
         raise ModelArtifactInvalidError("Model artifact must be a dictionary.")
@@ -234,7 +275,7 @@ def _validate_model_artifact(
         preprocessor=preprocessor,
         features=feature_names,
         threshold=threshold,
-        model_name=str(artifact.get("model_name", settings.model_name)),
+        model_name=str(artifact.get("model_name", fallback_model_name)),
         artifact_keys=sorted(artifact.keys()),
     )
 

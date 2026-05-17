@@ -44,6 +44,7 @@ Main responsibilities in this repository:
 - `POST /predict` returns credit risk prediction and decision-support output
 - FastAPI OpenAPI documentation is available at `/docs` when the server is running
 - human-in-the-loop response design is implemented for prediction output
+- validated model artifacts are cached in memory and reloaded when the artifact file metadata changes
 - Docker support is available for reproducible local API serving
 - GitHub Actions CI is available for automated test checks on push and pull request
 - Express backend adapter examples are available for backend team integration handoff
@@ -312,6 +313,7 @@ Model artifact metadata handling:
 - valid artifact returns `artifact_status: "available"` and `metadata_source: "artifact"`
 - invalid artifact returns `artifact_status: "invalid"` without crashing the API
 - valid artifact loading checks required keys, exact expected feature order, `model.predict_proba(...)`, `preprocessor.transform(...)`, and a threshold between `0` and `1`
+- valid artifact loading is cached after validation so public inference does not reload the pickle on every request
 
 Prepared prediction decision helpers:
 

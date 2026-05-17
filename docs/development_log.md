@@ -212,6 +212,12 @@ professional as a portfolio MLOps project.
   `EXT_SOURCE_1`, `EXT_SOURCE_2`, and `EXT_SOURCE_3` stay unknown instead of
   producing a misleading product value.
 - Added tests for the all-missing external source edge case.
+- Added an in-memory validated artifact cache so `/model-info` and `/predict`
+  do not repeatedly reload the same pickle file on every request.
+- Keyed the artifact cache by resolved path, modified timestamp, and file size
+  so a deliberate model replacement can be reloaded after the file metadata
+  changes.
+- Added a cache behavior test around `load_model_artifact(...)`.
 - Parsed `railway.toml` with Python `tomllib` in tests so Railway config changes
   are validated structurally, not only by string matching.
 - Added documentation tests that keep the contribution workflow visible.
@@ -230,5 +236,5 @@ benefit.
 - Deploy the current Railway service manually and verify `/health`,
   `/model-info`, and `/predict` on the public URL.
 - Keep future commits scoped and use `type(scope): summary` consistently.
-- If model serving grows, consider adding a dedicated readiness endpoint and
-  model artifact cache as separate checkpoints.
+- If model serving grows, consider adding a dedicated readiness endpoint,
+  request tracing, and model performance monitoring as separate checkpoints.
