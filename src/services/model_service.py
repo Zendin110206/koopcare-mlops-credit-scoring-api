@@ -281,9 +281,13 @@ def build_model_feature_frame(payload: PredictionRequest) -> pd.DataFrame:
     )
 
     ext_source_columns = ["EXT_SOURCE_1", "EXT_SOURCE_2", "EXT_SOURCE_3"]
+    feature_frame[ext_source_columns] = feature_frame[ext_source_columns].astype(float)
     feature_frame["EXT_SOURCE_MEAN"] = feature_frame[ext_source_columns].mean(axis=1)
     feature_frame["EXT_SOURCE_MIN"] = feature_frame[ext_source_columns].min(axis=1)
-    feature_frame["EXT_SOURCE_PROD"] = feature_frame[ext_source_columns].prod(axis=1)
+    feature_frame["EXT_SOURCE_PROD"] = feature_frame[ext_source_columns].prod(
+        axis=1,
+        min_count=1,
+    )
 
     return feature_frame[MODEL_FEATURE_COLUMNS]
 

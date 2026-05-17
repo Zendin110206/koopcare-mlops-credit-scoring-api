@@ -90,3 +90,20 @@ def test_build_model_feature_frame_handles_missing_external_source() -> None:
     assert math.isclose(feature_row["EXT_SOURCE_MEAN"], (0.6 + 0.4) / 2)
     assert math.isclose(feature_row["EXT_SOURCE_MIN"], 0.4)
     assert math.isclose(feature_row["EXT_SOURCE_PROD"], 0.6 * 0.4)
+
+
+def test_build_model_feature_frame_keeps_all_missing_external_sources_unknown() -> None:
+    payload = PredictionRequest(
+        **{
+            **VALID_PREDICTION_PAYLOAD,
+            "ext_source_1": None,
+            "ext_source_2": None,
+            "ext_source_3": None,
+        }
+    )
+
+    feature_row = build_model_feature_frame(payload).iloc[0]
+
+    assert math.isnan(feature_row["EXT_SOURCE_MEAN"])
+    assert math.isnan(feature_row["EXT_SOURCE_MIN"])
+    assert math.isnan(feature_row["EXT_SOURCE_PROD"])
