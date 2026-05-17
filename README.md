@@ -88,6 +88,7 @@ The model artifact is now included for the approved public portfolio deployment 
 ├── data/
 ├── docs/
 │   ├── api_contract.md
+│   ├── checkpoints/
 │   ├── development_log.md
 │   ├── docker_usage.md
 │   ├── public_deployment.md
@@ -107,10 +108,14 @@ The model artifact is now included for the approved public portfolio deployment 
 │   ├── schemas/
 │   └── services/
 ├── tests/
+├── .dockerignore
 ├── .env.example
+├── .gitattributes
+├── .gitignore
+├── CONTRIBUTING.md
 ├── Dockerfile
 ├── docker-compose.yml
-├── .gitignore
+├── railway.toml
 ├── requirements.txt
 └── README.md
 ```
@@ -202,37 +207,22 @@ Do not silently replace the committed artifact. A changed artifact must follow
 
 ## Current Endpoint Examples
 
-Health check:
+Health check with the committed public-ready model artifact present:
 
 ```json
 {
   "status": "ok",
   "service": "KoopCare ML Inference API",
   "environment": "development",
-  "model_loaded": false,
+  "model_loaded": true,
   "model_path": "models/best_model.pkl"
 }
 ```
 
-Model metadata:
+`/health` is a lightweight liveness endpoint. Use `/model-info` when you need
+artifact validation details.
 
-```json
-{
-  "model_loaded": false,
-  "model_name": "XGBoost",
-  "model_version": "koopcare-xgboost-v1",
-  "model_path": "models/best_model.pkl",
-  "threshold": 0.6660796,
-  "features_count": 25,
-  "artifact_status": "missing",
-  "artifact_keys": [],
-  "artifact_error": null,
-  "metadata_source": "configuration",
-  "note": "Model artifact is not available yet. Copy best_model.pkl into models/ before enabling prediction."
-}
-```
-
-Model metadata after a valid local artifact is available:
+Model metadata with the committed public-ready model artifact:
 
 ```json
 {
@@ -253,6 +243,24 @@ Model metadata after a valid local artifact is available:
   "artifact_error": null,
   "metadata_source": "artifact",
   "note": "Model artifact is available and runtime components were validated."
+}
+```
+
+Fallback model metadata if the configured artifact path is intentionally missing:
+
+```json
+{
+  "model_loaded": false,
+  "model_name": "XGBoost",
+  "model_version": "koopcare-xgboost-v1",
+  "model_path": "models/best_model.pkl",
+  "threshold": 0.6660796,
+  "features_count": 25,
+  "artifact_status": "missing",
+  "artifact_keys": [],
+  "artifact_error": null,
+  "metadata_source": "configuration",
+  "note": "Model artifact is not available yet. Copy best_model.pkl into models/ before enabling prediction."
 }
 ```
 
@@ -360,6 +368,7 @@ Prediction endpoint error handling:
 - [Docker Usage](docs/docker_usage.md)
 - [Public Deployment Guide](docs/public_deployment.md)
 - [Railway Variables Guide](docs/railway_variables.md)
+- [Contribution Workflow](CONTRIBUTING.md)
 - [Development Log](docs/development_log.md)
 - [Reference Links](references/README.md)
 - [Data Notes](data/README.md)

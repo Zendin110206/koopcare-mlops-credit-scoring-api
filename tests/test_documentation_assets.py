@@ -83,6 +83,15 @@ def test_public_checkpoint_document_exists() -> None:
     assert "docs/railway_variables.md" in guide
 
 
+def test_contribution_workflow_documents_commit_and_pr_rules() -> None:
+    guide = Path("CONTRIBUTING.md").read_text(encoding="utf-8")
+
+    assert "type(scope): short imperative summary" in guide
+    assert "python -m pytest" in guide
+    assert "Do not silently replace `models/best_model.pkl`" in guide
+    assert "AI recommends, cooperative officers decide" in guide
+
+
 def test_model_handoff_contract_documents_retraining_risks() -> None:
     guide = Path("docs/model_handoff_contract.md").read_text(encoding="utf-8")
 

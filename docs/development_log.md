@@ -187,3 +187,48 @@ browser/user
 -> project 13 public FastAPI ML API
 -> models/best_model.pkl
 ```
+
+## 2026-05-17
+
+### Goal
+
+Refresh the project 13 quality checkpoint after public deployment preparation
+and tighten anything that could make the repository look inconsistent or less
+professional as a portfolio MLOps project.
+
+### Work Completed
+
+- Added `CONTRIBUTING.md` with branch, commit, PR, validation, and model
+  artifact replacement rules.
+- Updated `README.md` so the project tree includes `CONTRIBUTING.md`,
+  `.dockerignore`, `.gitattributes`, `railway.toml`, and the public checkpoint
+  docs folder.
+- Updated README endpoint examples so the first documented path matches the
+  current public-ready state where `models/best_model.pkl` is committed and
+  `/model-info` reports `artifact_status: available`.
+- Kept the missing-artifact response documented as a fallback case instead of
+  presenting it as the default current state.
+- Fixed an external-source feature engineering edge case so all-missing
+  `EXT_SOURCE_1`, `EXT_SOURCE_2`, and `EXT_SOURCE_3` stay unknown instead of
+  producing a misleading product value.
+- Added tests for the all-missing external source edge case.
+- Parsed `railway.toml` with Python `tomllib` in tests so Railway config changes
+  are validated structurally, not only by string matching.
+- Added documentation tests that keep the contribution workflow visible.
+
+### Key Decision
+
+The current source layout is still acceptable for this API. The largest source
+file is the model service layer, and it remains under 300 lines. No large
+frontend-style component or ribuan-baris file exists in project 13. A split can
+be considered later if the model service gains multiple artifacts, caching, or
+monitoring, but forcing a premature refactor now would add risk without a clear
+benefit.
+
+### Next Steps
+
+- Deploy the current Railway service manually and verify `/health`,
+  `/model-info`, and `/predict` on the public URL.
+- Keep future commits scoped and use `type(scope): summary` consistently.
+- If model serving grows, consider adding a dedicated readiness endpoint and
+  model artifact cache as separate checkpoints.
