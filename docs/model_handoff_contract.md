@@ -64,6 +64,19 @@ The API validates this at runtime.
 
 If a new artifact does not match the expected contract, `/model-info` returns `artifact_status: "invalid"` and `/predict` returns HTTP `503`.
 
+The API caches a successfully validated artifact in memory. The cache key uses:
+
+```text
+resolved artifact path
+file modified timestamp
+file size
+```
+
+This avoids reloading the pickle on every public request while still allowing a
+deliberate local replacement to reload after the artifact file metadata changes.
+For production deployments, prefer redeploying the service after replacing the
+artifact so the running container and Git commit stay traceable.
+
 ## 3. Required Runtime Methods
 
 The artifact value under `model` must provide:

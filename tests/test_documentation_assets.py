@@ -99,6 +99,7 @@ def test_model_handoff_contract_documents_retraining_risks() -> None:
     assert "EXT_SOURCE" in guide
     assert "predict_proba" in guide
     assert "exactly two probability columns" in guide
+    assert "caches a successfully validated artifact" in guide
 
 
 def test_team_integration_contract_documents_client_responsibilities() -> None:
