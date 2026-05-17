@@ -218,6 +218,8 @@ professional as a portfolio MLOps project.
   so a deliberate model replacement can be reloaded after the file metadata
   changes.
 - Added a cache behavior test around `load_model_artifact(...)`.
+- Added a committed-artifact smoke test so CI verifies the public demo model can
+  still load and produce the documented prediction response.
 - Parsed `railway.toml` with Python `tomllib` in tests so Railway config changes
   are validated structurally, not only by string matching.
 - Added documentation tests that keep the contribution workflow visible.
