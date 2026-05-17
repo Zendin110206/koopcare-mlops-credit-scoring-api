@@ -1,3 +1,4 @@
+import tomllib
 from pathlib import Path
 
 
@@ -29,11 +30,18 @@ def test_dockerignore_excludes_private_and_large_local_files() -> None:
 
 def test_railway_config_uses_dockerfile_and_healthcheck() -> None:
     railway_config = Path("railway.toml").read_text(encoding="utf-8")
+    parsed_config = tomllib.loads(railway_config)
 
     assert 'builder = "DOCKERFILE"' in railway_config
     assert 'dockerfilePath = "Dockerfile"' in railway_config
     assert 'healthcheckPath = "/health"' in railway_config
     assert "healthcheckTimeout = 300" in railway_config
+    assert parsed_config["build"]["builder"] == "DOCKERFILE"
+    assert parsed_config["build"]["dockerfilePath"] == "Dockerfile"
+    assert parsed_config["deploy"]["healthcheckPath"] == "/health"
+    assert parsed_config["deploy"]["healthcheckTimeout"] == 300
+    assert parsed_config["deploy"]["restartPolicyType"] == "ON_FAILURE"
+    assert parsed_config["deploy"]["restartPolicyMaxRetries"] == 3
 
 
 def test_docker_compose_mounts_model_artifacts_read_only() -> None:
